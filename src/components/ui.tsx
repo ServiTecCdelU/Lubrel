@@ -33,7 +33,8 @@ const ESTILOS: Record<Variante, TextStyle> = {
   fuerte: { fontFamily: fonts.bodySemi, fontSize: 15, lineHeight: 20 },
   chico: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18, color: colors.muted },
   etiqueta: { fontFamily: fonts.bodyMedium, fontSize: 12, letterSpacing: 0.3, color: colors.muted },
-  numero: { fontFamily: fonts.display, fontSize: 17, letterSpacing: -0.2 },
+  // Cifras de ancho fijo: precios y cantidades alineados en listas y resúmenes.
+  numero: { fontFamily: fonts.display, fontSize: 17, letterSpacing: -0.2, fontVariant: ['tabular-nums'] },
 };
 
 export function T({ v = 'cuerpo', style, ...props }: TextProps & { v?: Variante }) {
@@ -210,6 +211,20 @@ export function FichaProducto({ imagenUrl, size = 56 }: { imagenUrl?: string | n
       }}
     >
       <Icono name="package-variant-closed" size={Math.round(size * 0.5)} color={colors.muted} />
+    </View>
+  );
+}
+
+/** Estado vacío de una lista: ícono, título, explicación y una acción. */
+export function Vacio({ icono, titulo, detalle, accion }: { icono: IconName; titulo: string; detalle?: string; accion?: ReactNode }) {
+  return (
+    <View style={{ alignItems: 'center', gap: 10, paddingTop: 48, paddingHorizontal: 32 }}>
+      <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.lineSoft, alignItems: 'center', justifyContent: 'center' }}>
+        <Icono name={icono} size={30} color={colors.muted} />
+      </View>
+      <T v="h2" style={{ textAlign: 'center' }}>{titulo}</T>
+      {detalle ? <T v="chico" style={{ textAlign: 'center' }}>{detalle}</T> : null}
+      {accion}
     </View>
   );
 }

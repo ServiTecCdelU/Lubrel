@@ -5,7 +5,7 @@ import { BarraSuperior } from '@/components/barra-superior';
 import { EstadoPedidoInsignia } from '@/components/estado-pedido';
 import { columnaAncha, columnaLectura, useEsAncha } from '@/components/marco-app';
 import { BannerRegistro } from '@/components/registro';
-import { Aviso, Cargando, Icono, T } from '@/components/ui';
+import { Aviso, Boton, Cargando, Icono, T, Vacio } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { fechaCorta, precio } from '@/lib/format';
 import { usePedidos } from '@/lib/queries';
@@ -38,7 +38,14 @@ export default function MisPedidos() {
           columnWrapperStyle={columnas > 1 ? { gap: 8 } : undefined}
           contentContainerStyle={[columnas > 1 ? columnaAncha : columnaLectura, { padding: 16, gap: 8 }]}
           refreshControl={<RefreshControl refreshing={pedidos.isRefetching} onRefresh={() => pedidos.refetch()} />}
-          ListEmptyComponent={<T v="chico" style={{ textAlign: 'center', paddingTop: 30 }}>Todavía no hiciste pedidos.</T>}
+          ListEmptyComponent={
+            <Vacio
+              icono="clipboard-text-outline"
+              titulo="Todavía no hiciste pedidos"
+              detalle="Cuando envíes el primero lo vas a seguir desde acá: recibido, preparando, en reparto y entregado."
+              accion={<Boton variante="suave" color={accent} chico icono="package-variant-closed" onPress={() => router.navigate('/catalogo')}>Ver productos</Boton>}
+            />
+          }
           renderItem={({ item }) => (
             <Pressable
               accessibilityRole="button"

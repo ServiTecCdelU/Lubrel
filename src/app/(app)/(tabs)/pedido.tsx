@@ -12,7 +12,7 @@ import { DetalleCantidad, SelectorCantidad } from '@/components/cantidad';
 import { HojaDatosComercio } from '@/components/datos-comercio';
 import { FotoProducto } from '@/components/foto-producto';
 import { columnaAncha, columnaLectura, useEsAncha } from '@/components/marco-app';
-import { Aviso, Boton, Fila, Insignia, T, Tarjeta } from '@/components/ui';
+import { Aviso, Boton, Fila, Insignia, T, Tarjeta, Vacio } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { useDebounce } from '@/hooks/use-debounce';
 import { ApiError } from '@/lib/api';
@@ -113,13 +113,17 @@ export default function Pedido() {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <BarraSuperior titulo="Carrito" color={accent} />
-        <View style={{ flex: 1, padding: 24, gap: 12, justifyContent: 'center', alignItems: 'center' }}>
-          <T v="h2">Tu carrito está vacío</T>
-          <T v="chico" style={{ textAlign: 'center' }}>Sumá productos desde el catálogo o repetí tu último pedido desde el inicio.</T>
-          <Boton color={accent} icono="package-variant-closed" onPress={() => router.navigate('/catalogo')} style={{ marginTop: 8 }}>
-            Ver productos
-          </Boton>
-        </View>
+        <Vacio
+          icono="cart-outline"
+          titulo="Tu carrito está vacío"
+          detalle="Sumá productos desde el catálogo, escaneá un código de barras o repetí tu último pedido desde el inicio."
+          accion={
+            <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
+              <Boton color={accent} chico icono="package-variant-closed" onPress={() => router.navigate('/catalogo')}>Ver productos</Boton>
+              <Boton variante="suave" color={accent} chico icono="barcode-scan" onPress={() => router.push('/escanear')}>Escanear</Boton>
+            </View>
+          }
+        />
       </View>
     );
   }

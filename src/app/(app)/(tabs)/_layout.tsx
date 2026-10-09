@@ -10,9 +10,10 @@ import { useCarrito } from '@/state/carrito';
 import { useRegistroStore } from '@/state/registro';
 import { colors, fonts, tint } from '@/theme';
 
-const icono = (name: IconName) =>
-  function TabIcon({ color }: { color: ColorValue }) {
-    return <Icono name={name} color={color} size={22} />;
+/** Ícono de contorno; la pestaña activa pasa a la versión rellena. */
+const icono = (name: IconName, activo: IconName) =>
+  function TabIcon({ color, focused }: { color: ColorValue; focused: boolean }) {
+    return <Icono name={focused ? activo : name} color={color} size={22} />;
   };
 
 export default function TabsLayout() {
@@ -49,14 +50,14 @@ export default function TabsLayout() {
           sceneStyle: { backgroundColor: colors.bg },
         }}
       >
-        <Tabs.Screen name="index" options={{ title: 'Inicio', tabBarIcon: icono('view-dashboard-outline') }} />
-        <Tabs.Screen name="catalogo" options={{ title: 'Productos', tabBarIcon: icono('package-variant-closed') }} />
+        <Tabs.Screen name="index" options={{ title: 'Inicio', tabBarIcon: icono('view-dashboard-outline', 'view-dashboard') }} />
+        <Tabs.Screen name="catalogo" options={{ title: 'Productos', tabBarIcon: icono('package-variant-closed', 'package-variant') }} />
         <Tabs.Screen
           name="pedido"
-          options={{ title: 'Carrito', tabBarIcon: icono('cart-outline'), tabBarBadge: lineas > 0 ? lineas : undefined }}
+          options={{ title: 'Carrito', tabBarIcon: icono('cart-outline', 'cart'), tabBarBadge: lineas > 0 ? lineas : undefined }}
         />
-        <Tabs.Screen name="pedidos" options={{ title: 'Pedidos', tabBarIcon: icono('clipboard-list-outline') }} />
-        <Tabs.Screen name="cuenta" options={{ title: 'Cuenta', tabBarIcon: icono('wallet-outline') }} />
+        <Tabs.Screen name="pedidos" options={{ title: 'Pedidos', tabBarIcon: icono('clipboard-list-outline', 'clipboard-list') }} />
+        <Tabs.Screen name="cuenta" options={{ title: 'Cuenta', tabBarIcon: icono('wallet-outline', 'wallet') }} />
       </Tabs>
       {visitante && <RecordatorioRegistro conSesion={conSesion} accent={accent} />}
     </>

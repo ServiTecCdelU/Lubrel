@@ -10,7 +10,7 @@ import { HojaProducto } from '@/components/detalle-producto';
 import { anchoHoja, useAnchoApp } from '@/components/marco-app';
 import { ProductoFila, ProductoTarjeta } from '@/components/producto-fila';
 import { iconoDeRubro, SelectorRubros } from '@/components/rubros';
-import { Aviso, Boton, Cargando, Icono, T, type IconName } from '@/components/ui';
+import { Aviso, Boton, Cargando, Icono, T, Vacio, type IconName } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { useDebounce } from '@/hooks/use-debounce';
 import { precio } from '@/lib/format';
@@ -174,27 +174,17 @@ function Resumen({ total, q, rubro, soloOfertas, masPedidos, soloFavoritos, onLi
 }
 
 function SinResultados({ q, accent, soloFavoritos, onLimpiar }: { q: string; accent: string; soloFavoritos: boolean; onLimpiar: () => void }) {
+  const verTodos = <Boton variante="suave" color={accent} chico onPress={onLimpiar}>Ver todos los productos</Boton>;
   if (soloFavoritos && !q) {
-    return (
-      <View style={{ alignItems: 'center', gap: 10, paddingTop: 48, paddingHorizontal: 32 }}>
-        <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.lineSoft, alignItems: 'center', justifyContent: 'center' }}>
-          <Icono name="heart-outline" size={30} color={colors.muted} />
-        </View>
-        <T v="h2" style={{ textAlign: 'center' }}>Todavía no tenés favoritos</T>
-        <T v="chico" style={{ textAlign: 'center' }}>Tocá el corazón de los productos que pedís siempre y los vas a encontrar acá.</T>
-        <Boton variante="suave" color={accent} chico onPress={onLimpiar}>Ver todos los productos</Boton>
-      </View>
-    );
+    return <Vacio icono="heart-outline" titulo="Todavía no tenés favoritos" detalle="Tocá el corazón de los productos que pedís siempre y los vas a encontrar acá." accion={verTodos} />;
   }
   return (
-    <View style={{ alignItems: 'center', gap: 10, paddingTop: 48, paddingHorizontal: 32 }}>
-      <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.lineSoft, alignItems: 'center', justifyContent: 'center' }}>
-        <Icono name="magnify" size={30} color={colors.muted} />
-      </View>
-      <T v="h2" style={{ textAlign: 'center' }}>{q ? `No encontramos “${q}”` : 'No hay productos acá'}</T>
-      <T v="chico" style={{ textAlign: 'center' }}>Probá con otra palabra, la marca o el código. También podés sacar los filtros.</T>
-      <Boton variante="suave" color={accent} chico onPress={onLimpiar}>Ver todos los productos</Boton>
-    </View>
+    <Vacio
+      icono="magnify"
+      titulo={q ? `No encontramos “${q}”` : 'No hay productos acá'}
+      detalle="Probá con otra palabra, la marca o el código. También podés sacar los filtros."
+      accion={verTodos}
+    />
   );
 }
 
