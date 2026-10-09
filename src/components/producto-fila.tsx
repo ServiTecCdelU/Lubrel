@@ -17,6 +17,8 @@ interface Props {
   /** Sin onFavorito no se muestra el corazón (p. ej. en los carruseles del inicio). */
   favorito?: boolean;
   onFavorito?: (producto: ProductoApp) => void;
+  /** Tocar el nombre o el precio abre la hoja del producto. */
+  onAbrir?: (producto: ProductoApp) => void;
 }
 
 function Corazon({ producto, favorito, accent, onFavorito }: { producto: ProductoApp; favorito: boolean; accent: string; onFavorito: (p: ProductoApp) => void }) {
@@ -62,26 +64,31 @@ const estiloEnCarrito = (cantidad: number, accent: string) =>
 
 const subtitulo = (p: ProductoApp) => `${presentacion(p.unidadesPorBulto, p.seDivideEn)}${p.codigo ? ` · Cód. ${p.codigo}` : ''}`;
 
+const abrible = (onAbrir: Props['onAbrir'], producto: ProductoApp) =>
+  onAbrir
+    ? ({ accessibilityRole: 'button' as const, accessibilityLabel: `Ver ${producto.nombre}`, onPress: () => onAbrir(producto) })
+    : {};
+
 export const ProductoFila = memo(function ProductoFila(props: Props) {
-  const { producto, cantidad, accent, favorito, onFavorito } = props;
+  const { producto, cantidad, accent, favorito, onFavorito, onAbrir } = props;
   return (
     <View style={[tarjetaBase, { flexGrow: 1, padding: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }, estiloEnCarrito(cantidad, accent)]}>
       <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} size={40} />
-      <View style={{ flex: 1, gap: 2 }}>
+      <Pressable {...abrible(onAbrir, producto)} style={{ flex: 1, gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
           <T v="fuerte" numberOfLines={2} style={{ fontSize: 14, flex: 1 }}>{producto.nombre}</T>
           {onFavorito && <Corazon producto={producto} favorito={!!favorito} accent={accent} onFavorito={onFavorito} />}
         </View>
         <T v="chico" style={{ fontSize: 12 }} numberOfLines={1}>{subtitulo(producto)}</T>
         <Precio producto={producto} accent={accent} />
-      </View>
+      </Pressable>
       <Controles producto={producto} cantidad={cantidad} accent={accent} onCambiar={props.onCambiar} />
     </View>
   );
 });
 
 export const ProductoTarjeta = memo(function ProductoTarjeta(props: Props) {
-  const { producto, cantidad, accent, favorito, onFavorito } = props;
+  const { producto, cantidad, accent, favorito, onFavorito, onAbrir } = props;
   return (
     <View style={[tarjetaBase, { flex: 1, padding: 10, gap: 6 }, estiloEnCarrito(cantidad, accent)]}>
       <View style={{ alignItems: 'center', paddingVertical: 4 }}>
@@ -92,9 +99,11 @@ export const ProductoTarjeta = memo(function ProductoTarjeta(props: Props) {
           </View>
         )}
       </View>
-      <T v="fuerte" numberOfLines={2} style={{ fontSize: 13, minHeight: 34 }}>{producto.nombre}</T>
-      <T v="chico" style={{ fontSize: 12 }} numberOfLines={1}>{subtitulo(producto)}</T>
-      <Precio producto={producto} accent={accent} />
+      <Pressable {...abrible(onAbrir, producto)} style={{ gap: 6 }}>
+        <T v="fuerte" numberOfLines={2} style={{ fontSize: 13, minHeight: 34 }}>{producto.nombre}</T>
+        <T v="chico" style={{ fontSize: 12 }} numberOfLines={1}>{subtitulo(producto)}</T>
+        <Precio producto={producto} accent={accent} />
+      </Pressable>
       <View style={{ alignItems: cantidad > 0 ? 'center' : 'flex-end', marginTop: 'auto', paddingTop: 4 }}>
         <Controles producto={producto} cantidad={cantidad} accent={accent} onCambiar={props.onCambiar} />
       </View>

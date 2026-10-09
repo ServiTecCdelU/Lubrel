@@ -4,6 +4,7 @@
 // (2 en celular). Se pasa de tanda con las flechas del título. Las tarjetas se reparten el ancho.
 import { useState } from 'react';
 import { View } from 'react-native';
+import { HojaProducto } from '@/components/detalle-producto';
 import { useAnchoApp } from '@/components/marco-app';
 import { ProductoTarjeta } from '@/components/producto-fila';
 import { anchoInicio, calcularTanda, FlechasTanda, porTandaPara } from '@/components/tandas';
@@ -33,6 +34,7 @@ export function CarruselProductos({
   const carrito = useCarrito(slug);
   const setCantidad = useCarritoStore((s) => s.setCantidad);
   const [tanda, setTanda] = useState(0);
+  const [abierto, setAbierto] = useState<ProductoApp | null>(null);
   const porTanda = porTandaPara(anchoInicio(useAnchoApp()), TANDA);
 
   if (!cargando && (!productos || productos.length === 0)) return null;
@@ -60,7 +62,7 @@ export function CarruselProductos({
         <View style={{ flexDirection: 'row', gap: GAP }}>
           {tandaActual.map((p) => (
             <View key={p.id} style={{ flex: 1, minWidth: 0 }}>
-              <ProductoTarjeta producto={p} cantidad={carrito[p.id]?.cantidad ?? 0} accent={accent} onCambiar={cambiar} />
+              <ProductoTarjeta producto={p} cantidad={carrito[p.id]?.cantidad ?? 0} accent={accent} onCambiar={cambiar} onAbrir={setAbierto} />
             </View>
           ))}
           {Array.from({ length: huecos }, (_, k) => (
@@ -68,6 +70,7 @@ export function CarruselProductos({
           ))}
         </View>
       )}
+      <HojaProducto producto={abierto} slug={slug} accent={accent} onCerrar={() => setAbierto(null)} />
     </View>
   );
 }

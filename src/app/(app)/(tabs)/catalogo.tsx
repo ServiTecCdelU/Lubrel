@@ -6,6 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, TextInput, View } from 'react-native';
 import { BarraSuperior } from '@/components/barra-superior';
+import { HojaProducto } from '@/components/detalle-producto';
 import { anchoHoja, useAnchoApp } from '@/components/marco-app';
 import { ProductoFila, ProductoTarjeta } from '@/components/producto-fila';
 import { iconoDeRubro, SelectorRubros } from '@/components/rubros';
@@ -246,6 +247,7 @@ export default function Catalogo() {
   const { rubro, setRubro, soloOfertas, setSoloOfertas, masPedidos, setMasPedidos, busqueda, setBusqueda, enfoque } = useFiltrosDeRuta();
   const [verRubros, setVerRubros] = useState(false);
   const [soloFavoritos, setSoloFavoritos] = useState(false);
+  const [abierto, setAbierto] = useState<ProductoApp | null>(null);
   const q = useDebounce(busqueda.trim(), 350);
   const favoritos = useFavoritos(slug);
   const alternarFavorito = useFavoritosStore((s) => s.alternar);
@@ -346,9 +348,9 @@ export default function Catalogo() {
           renderItem={({ item }) => (
             <View style={anchoItem ? { width: anchoItem } : undefined}>
               {grilla ? (
-                <ProductoTarjeta producto={item} cantidad={carrito[item.id]?.cantidad ?? 0} accent={accent} onCambiar={cambiar} favorito={favoritosSet.has(item.id)} onFavorito={onFavorito} />
+                <ProductoTarjeta producto={item} cantidad={carrito[item.id]?.cantidad ?? 0} accent={accent} onCambiar={cambiar} favorito={favoritosSet.has(item.id)} onFavorito={onFavorito} onAbrir={setAbierto} />
               ) : (
-                <ProductoFila producto={item} cantidad={carrito[item.id]?.cantidad ?? 0} accent={accent} onCambiar={cambiar} favorito={favoritosSet.has(item.id)} onFavorito={onFavorito} />
+                <ProductoFila producto={item} cantidad={carrito[item.id]?.cantidad ?? 0} accent={accent} onCambiar={cambiar} favorito={favoritosSet.has(item.id)} onFavorito={onFavorito} onAbrir={setAbierto} />
               )}
             </View>
           )}
@@ -364,6 +366,7 @@ export default function Catalogo() {
       {lineas.length > 0 && <CarritoFlotante cantidad={lineas.length} total={estimado} accent={accent} />}
 
       <SelectorRubros visible={verRubros} rubros={rubros} activo={rubro} color={accent} onElegir={setRubro} onCerrar={() => setVerRubros(false)} />
+      <HojaProducto producto={abierto} slug={slug!} accent={accent} favorito={abierto ? favoritosSet.has(abierto.id) : false} onFavorito={onFavorito} onCerrar={() => setAbierto(null)} />
     </View>
   );
 }
