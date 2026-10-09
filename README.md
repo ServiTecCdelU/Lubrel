@@ -27,6 +27,7 @@ npx expo start            # abrir con Expo Go o un development build
 - **Los precios los pone el servidor.** El carrito guarda qué y cuánto; lo que se muestra sale de `POST /cotizar`. El `precioReferencia` del carrito es solo el estimado de la barra del catálogo.
 - **Confirmar un pedido reusa el mismo `clientRequestId`** en cada reintento hasta que el carrito cambia: el servidor no duplica.
 - **La app no lee tablas de Supabase.** Supabase se usa únicamente para el login por OTP.
+- **Las consultas quedan guardadas en el celular** (catálogo, ofertas, pedidos, cuenta) por una semana: sin señal la app abre con los últimos datos y los refresca al volver la conexión. Si cambia la forma de alguna respuesta de la API, subir el `buster` en `src/app/_layout.tsx` para descartar lo guardado.
 - Alta por invitación: el vendedor genera el QR en la ficha del cliente (panel) → `/a/{slug}?inv=…` → `servitecpedidos://invitacion?slug=…&inv=…`.
 
 ## Publicar una versión
