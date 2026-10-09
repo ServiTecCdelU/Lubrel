@@ -1,41 +1,17 @@
-// Logueado pero sin distribuidora elegida: escanear su QR o pegar su link. Con eso el
-// layout de (app) hace el alta automática. Un link de invitación viejo (?inv=) también sirve.
+// Logueado pero sin distribuidora elegida: escanear su QR, o escribir el código que le dio
+// el vendedor (también sirve el link del QR o uno de invitación). Con eso el layout de (app)
+// hace el alta automática o canjea la invitación.
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CodigoDistribuidora } from '@/components/codigo-distribuidora';
 import { columnaLectura } from '@/components/marco-app';
-import { Aviso, Boton, Icono, T, Tarjeta } from '@/components/ui';
+import { Aviso, Boton, Icono, T } from '@/components/ui';
 import { cerrarSesion } from '@/lib/notificaciones';
-import { parseQrDistribuidora } from '@/lib/qr-distribuidora';
-import { useCanjearInvitacion } from '@/lib/queries';
-import { useComercioStore } from '@/state/comercio';
-import { ACCENT_DEFAULT, colors, fonts, radius, tint } from '@/theme';
+import { ACCENT_DEFAULT, colors, radius, tint } from '@/theme';
 
 export default function SinComercio() {
   const { error: errorInicial } = useLocalSearchParams<{ error?: string }>();
-  const [texto, setTexto] = useState('');
-  const [aviso, setAviso] = useState<string | null>(errorInicial || null);
-  const canjear = useCanjearInvitacion();
-  const setSlugActivo = useComercioStore((s) => s.setSlugActivo);
-  const setDistribuidora = useComercioStore((s) => s.setDistribuidora);
-
-  const vincular = () => {
-    const qr = parseQrDistribuidora(texto);
-    if (!qr) {
-      setAviso('Eso no parece el link de una distribuidora. Copialo completo.');
-      return;
-    }
-    setAviso(null);
-    if (qr.tipo === 'distribuidora') {
-      setDistribuidora(qr.slug);
-      return;
-    }
-    canjear.mutate(qr.token, {
-      onSuccess: (r) => setSlugActivo(r.slug),
-      onError: (e) => setAviso(e.message),
-    });
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -46,31 +22,17 @@ export default function SinComercio() {
         <View style={{ gap: 6 }}>
           <T v="h1">Elegí tu distribuidora</T>
           <T v="chico" style={{ fontSize: 14 }}>
-            Escaneá el QR de tu distribuidora o pegá su link. Quedás registrado como cliente al instante.
+            Escaneá el QR de tu distribuidora o escribí el código que te dio tu vendedor. Quedás registrado como cliente al instante.
           </T>
         </View>
+
+        {errorInicial ? <Aviso texto={errorInicial} /> : null}
 
         <Boton icono="qrcode-scan" onPress={() => router.push('/escanear-qr')}>
           Escanear QR de la distribuidora
         </Boton>
 
-        <Tarjeta style={{ gap: 12 }}>
-          <T v="fuerte" style={{ fontSize: 14 }}>Link de la distribuidora</T>
-          <TextInput
-            accessibilityLabel="Link de la distribuidora"
-            value={texto}
-            onChangeText={setTexto}
-            placeholder="https://…/app/demo"
-            placeholderTextColor={colors.muted}
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={{ height: 48, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 12, fontSize: 15, fontFamily: fonts.body, color: colors.ink, backgroundColor: colors.card }}
-          />
-          {aviso ? <Aviso texto={aviso} /> : null}
-          <Boton icono="link-variant" onPress={vincular} cargando={canjear.isPending} disabled={!texto.trim()}>
-            Continuar
-          </Boton>
-        </Tarjeta>
+        <CodigoDistribuidora accent={ACCENT_DEFAULT} />
 
         {router.canGoBack() ? (
           <Boton variante="borde" onPress={() => router.back()}>

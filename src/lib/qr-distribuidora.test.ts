@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { parseQrDistribuidora } from './qr-distribuidora';
+import { codigoDistribuidora, parseQrDistribuidora } from './qr-distribuidora';
 
 test('reconoce el deep link de distribuidora con esquema propio', () => {
   assert.deepEqual(parseQrDistribuidora('servitecpedidos://a/demo'), { tipo: 'distribuidora', slug: 'demo' });
@@ -40,6 +40,19 @@ test('reconoce un token pelado (sin link)', () => {
 test('devuelve null para texto que no matchea nada', () => {
   assert.equal(parseQrDistribuidora('cualquier cosa'), null);
   assert.equal(parseQrDistribuidora(''), null);
+  assert.equal(parseQrDistribuidora('x'), null);
+});
+
+test('un código corto pelado es la distribuidora con ese slug (sin importar mayúsculas ni espacios)', () => {
+  assert.deepEqual(parseQrDistribuidora('LUBREL'), { tipo: 'distribuidora', slug: 'lubrel' });
+  assert.deepEqual(parseQrDistribuidora('  demo '), { tipo: 'distribuidora', slug: 'demo' });
+  assert.equal(codigoDistribuidora('Demo-01'), 'demo-01');
+  assert.equal(codigoDistribuidora('con espacio'), null);
+});
+
+test('de 16 caracteres en adelante un código pelado sigue siendo un token de invitación', () => {
+  assert.equal(parseQrDistribuidora('ABCDEFGHIJ012345')?.tipo, 'invitacion');
+  assert.equal(parseQrDistribuidora('abcdefghij01234')?.tipo, 'distribuidora');
 });
 
 test('reconoce el link web /app/<slug> del QR de la distribuidora', () => {

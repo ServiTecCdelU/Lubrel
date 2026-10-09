@@ -6,16 +6,16 @@ import { CameraView, scanFromURLAsync, type BarcodeScanningResult } from 'expo-c
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Aviso, Boton, Cargando, Icono, T } from '@/components/ui';
 import { usePermisoCamara } from '@/hooks/use-permiso-camara';
+import { useVincularCodigo } from '@/hooks/use-vincular-codigo';
 import { vibrarExito } from '@/lib/haptica';
 import { parseQrDistribuidora } from '@/lib/qr-distribuidora';
-import { useComercioStore } from '@/state/comercio';
 import { ACCENT_DEFAULT, colors, radius } from '@/theme';
 
-type Estado = { tipo: 'escaneando' } | { tipo: 'error'; mensaje: string };
+type Estado = { tipo: 'escaneando' } | { tipo: 'verificando' } | { tipo: 'error'; mensaje: string };
 
 export default function EscanearQr() {
   const insets = useSafeAreaInsets();
@@ -24,9 +24,7 @@ export default function EscanearQr() {
   const [sinCamara, setSinCamara] = useState(false);
   // La cámara dispara el mismo código muchas veces por segundo: se procesa uno a la vez.
   const ocupado = useRef(false);
-  const distribuidoraActual = useComercioStore((s) => s.distribuidora);
-  const setDistribuidora = useComercioStore((s) => s.setDistribuidora);
-  const setInvitacion = useComercioStore((s) => s.setInvitacion);
+  const { vincular } = useVincularCodigo();
 
   const escanearOtro = () => {
     ocupado.current = false;
@@ -35,28 +33,17 @@ export default function EscanearQr() {
 
   const salir = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
-  const procesar = (data: string) => {
-    const resultado = parseQrDistribuidora(data);
-    if (!resultado) {
+  // Un QR de distribuidora alcanza para entrar (como visitante, o con la cuenta si ya tiene
+  // sesión); uno de invitación queda guardado y el layout de la app lo canjea. Antes de fijar
+  // la distribuidora se comprueba que exista: un QR ajeno con texto corto no entra a ninguna.
+  const procesar = async (data: string) => {
+    if (!parseQrDistribuidora(data)) {
       setEstado({ tipo: 'error', mensaje: 'Ese código no es un QR de Leon Express.' });
       return;
     }
-
-    if (resultado.tipo === 'distribuidora') {
-      // Alcanza para entrar: como visitante, o con la cuenta si ya tiene sesión.
-      setDistribuidora(resultado.slug);
-      router.replace('/');
-      return;
-    }
-
-    const slug = resultado.slug ?? distribuidoraActual;
-    if (!slug) {
-      setEstado({ tipo: 'error', mensaje: 'No reconocemos la distribuidora de esa invitación. Escaneá el QR que te dio tu vendedor.' });
-      return;
-    }
-    setDistribuidora(slug);
-    setInvitacion({ slug, token: resultado.token });
-    salir();
+    setEstado({ tipo: 'verificando' });
+    const mensaje = await vincular(data);
+    if (mensaje) setEstado({ tipo: 'error', mensaje });
   };
 
   const onEscaneo = ({ data }: BarcodeScanningResult) => {
@@ -143,6 +130,13 @@ export default function EscanearQr() {
           <T v="chico" style={{ textAlign: 'center' }}>
             Apuntá la cámara al QR de la distribuidora o de tu invitación.
           </T>
+        )}
+
+        {estado.tipo === 'verificando' && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <ActivityIndicator color={ACCENT_DEFAULT} />
+            <T v="chico">Comprobando la distribuidora…</T>
+          </View>
         )}
 
         {estado.tipo === 'error' && (
