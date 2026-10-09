@@ -1,5 +1,6 @@
 // Cliente de /api/app/v1 del SaaS. Sobre de respuesta: { data } o { error }.
 import { env } from '@/lib/env';
+import { reportarError } from '@/lib/monitoreo';
 import { supabase } from '@/lib/supabase';
 
 export class ApiError extends Error {
@@ -51,7 +52,13 @@ export async function api<T>(
   }
   if (!res.ok) {
     const { error, ...extra } = json;
-    throw new ApiError(res.status, error || 'Algo salió mal. Probá de nuevo.', extra);
+    const fallo = new ApiError(res.status, error || 'Algo salió mal. Probá de nuevo.', extra);
+    // Un 5xx es un problema del servidor que hay que ver, aunque la pantalla lo maneje.
+    if (res.status >= 500) reportarError(fallo, { path, method: opts.method ?? 'GET' });
+    // Token que el servidor ya no acepta (cuenta borrada, refresh fallido): cerrar la sesión
+    // local, así la app vuelve a "Ingresar" en vez de mostrar un error en cada pantalla.
+    if (res.status === 401 && headers.Authorization) void supabase.auth.signOut({ scope: 'local' });
+    throw fallo;
   }
   return json.data as T;
 }

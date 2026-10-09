@@ -5,6 +5,7 @@ import { useEsAncha } from '@/components/marco-app';
 import { RecordatorioRegistro } from '@/components/registro';
 import { Icono, type IconName } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { monitorearDistribuidora } from '@/lib/monitoreo';
 import { useCarrito } from '@/state/carrito';
 import { useRegistroStore } from '@/state/registro';
 import { colors, fonts, tint } from '@/theme';
@@ -25,6 +26,10 @@ export default function TabsLayout() {
   useEffect(() => {
     if (visitante) recordarSiToca();
   }, [visitante, recordarSiToca]);
+
+  useEffect(() => {
+    monitorearDistribuidora(slug);
+  }, [slug]);
 
   return (
     <>

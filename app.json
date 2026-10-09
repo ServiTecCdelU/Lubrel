@@ -63,6 +63,13 @@
           "cameraPermission": "La cámara se usa para escanear el QR de tu distribuidora y el código de barras de los productos.",
           "microphonePermission": false
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "note": "Organización, proyecto y token por variables de entorno: SENTRY_ORG, SENTRY_PROJECT y SENTRY_AUTH_TOKEN (ver README)."
+        }
       ]
     ],
     "experiments": {
@@ -76,6 +83,12 @@
       "eas": {
         "projectId": "7d7ecc25-0858-4614-8d2a-d54dd7e4460b"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7d7ecc25-0858-4614-8d2a-d54dd7e4460b"
+    },
+    "runtimeVersion": {
+      "policy": "fingerprint"
     }
   }
 }

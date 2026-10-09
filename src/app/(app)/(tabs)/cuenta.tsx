@@ -9,6 +9,7 @@ import { LinksCuenta } from '@/components/eliminar-cuenta';
 import { HojaDatosComercio } from '@/components/datos-comercio';
 import { columnaAncha, columnaLectura, useEsAncha } from '@/components/marco-app';
 import { PieServiTec } from '@/components/pie-servitec';
+import { VersionApp } from '@/components/version-app';
 import { BannerRegistro } from '@/components/registro';
 import { Aviso, Boton, Cargando, Fila, Icono, Insignia, T, Tarjeta, type IconName } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
@@ -39,6 +40,7 @@ function CuentaVisitante() {
           </Boton>
         )}
         <LinksCuenta conSesion={conSesion} />
+        <VersionApp />
         <PieServiTec />
       </ScrollView>
     </View>
@@ -234,6 +236,7 @@ function CuentaCliente() {
             Cerrar sesión
           </Boton>
           <LinksCuenta conSesion />
+          <VersionApp />
 
           <PieServiTec />
         </ScrollView>

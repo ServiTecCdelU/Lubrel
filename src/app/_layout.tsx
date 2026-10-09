@@ -1,3 +1,5 @@
+// El monitoreo se importa primero: así atrapa errores de todo lo que se carga después.
+import { envolverApp, monitorearUsuario, navegacionSentry } from '@/lib/monitoreo';
 import {
   Geist_400Regular,
   Geist_500Medium,
@@ -7,7 +9,7 @@ import {
 } from '@expo-google-fonts/geist';
 import { onlineManager, QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { addNetworkStateListener } from 'expo-network';
-import { Stack } from 'expo-router';
+import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -50,6 +52,12 @@ function Navegacion() {
   const hidratado = useHidratado();
   const listo = (fuentes || !!errorFuentes) && !cargando && hidratado;
   const qc = useQueryClient();
+  const navegacion = useNavigationContainerRef();
+
+  // Sentry nombra la pantalla de cada error con las rutas de expo-router.
+  useEffect(() => {
+    navegacionSentry.registerNavigationContainer(navegacion);
+  }, [navegacion]);
 
   useEffect(() => {
     if (listo) SplashScreen.hideAsync();
@@ -59,6 +67,10 @@ function Navegacion() {
   useEffect(() => {
     if (!cargando && !session) qc.clear();
   }, [cargando, session, qc]);
+
+  useEffect(() => {
+    if (!cargando) monitorearUsuario(session?.user.id ?? null);
+  }, [cargando, session]);
 
   if (!listo) return null;
 
@@ -89,7 +101,7 @@ function Navegacion() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SesionProvider>
@@ -99,3 +111,5 @@ export default function RootLayout() {
     </QueryClientProvider>
   );
 }
+
+export default envolverApp(RootLayout);

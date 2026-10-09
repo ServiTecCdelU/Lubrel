@@ -6,6 +6,7 @@
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo/ui": "~57.0.20",
     "@expo/vector-icons": "^15.0.2",
+    "@sentry/react-native": "~7.11.0",
     "@supabase/supabase-js": "^2.117.2",
     "@tanstack/react-query": "^5.104.0",
     "expo": "~57.0.25",
@@ -16,6 +17,7 @@
     "expo-device": "~57.0.2",
     "expo-font": "~57.0.4",
     "expo-glass-effect": "~57.0.4",
+    "expo-haptics": "~57.0.3",
     "expo-image": "~57.0.5",
     "expo-image-picker": "~57.0.20",
     "expo-linking": "~57.0.11",
@@ -27,6 +29,7 @@
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.3",
     "expo-system-ui": "~57.0.4",
+    "expo-updates": "~57.0.25",
     "expo-web-browser": "~57.0.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -57,7 +60,8 @@
     "lint": "expo lint",
     "build:android": "npx eas-cli@latest build --platform android --profile production --non-interactive --wait && node scripts/version-app.mjs commit",
     "publicar-version": "node scripts/version-app.mjs publicar",
-    "test": "jest"
+    "test": "jest",
+    "publicar-update": "npx eas-cli@latest update --channel production --environment production"
   },
   "private": true,
   "jest": {
