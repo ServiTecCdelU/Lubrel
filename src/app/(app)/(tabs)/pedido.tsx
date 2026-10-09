@@ -14,7 +14,9 @@ import { FotoProducto } from '@/components/foto-producto';
 import { columnaAncha, columnaLectura, useEsAncha } from '@/components/marco-app';
 import { Aviso, Boton, Fila, Insignia, T, Tarjeta } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { useDebounce } from '@/hooks/use-debounce';
 import { ApiError } from '@/lib/api';
+import { vibrarExito } from '@/lib/haptica';
 import { equivalencia } from '@/lib/cantidad';
 import { precio, presentacion } from '@/lib/format';
 import { useCotizacion, useCrearPedido, useCuenta } from '@/lib/queries';
@@ -43,7 +45,10 @@ export default function Pedido() {
 
   const lineas = useMemo(() => Object.values(carrito), [carrito]);
   const items = useMemo(() => lineas.map((l) => ({ productId: l.productId, quantity: l.cantidad })), [lineas]);
-  const cot = useCotizacion(slug!, items, !visitante);
+  // Tocar [+] cinco veces seguidas cotiza una vez, no cinco: se espera a que la cantidad se asiente.
+  const itemsAsentados = useDebounce(items, 400);
+  const asentando = itemsAsentados !== items;
+  const cot = useCotizacion(slug!, itemsAsentados, !visitante);
   const crear = useCrearPedido(slug!);
   const cuenta = useCuenta(slug!, !visitante);
   const nombreGoogle = nombreDeGoogle(useSesion().session?.user.user_metadata);
@@ -60,6 +65,7 @@ export default function Pedido() {
       { items, clientRequestId: id, notas: notas.trim() || undefined },
       {
         onSuccess: (r) => {
+          vibrarExito();
           vaciar(slug!);
           setNotas('');
           router.push({ pathname: '/pedidos/[id]', params: { id: r.pedidoId, nuevo: '1' } });
@@ -233,7 +239,7 @@ export default function Pedido() {
           Registrarme y enviar{total !== undefined ? ` · ${precio(total)}` : ''}
         </Boton>
       ) : (
-        <Boton color={accent} icono="check" onPress={confirmar} cargando={crear.isPending} disabled={!cot.data || cot.isFetching || !!cot.error}>
+        <Boton color={accent} icono="check" onPress={confirmar} cargando={crear.isPending} disabled={!cot.data || cot.isFetching || asentando || !!cot.error}>
           Confirmar pedido{total !== undefined ? ` · ${precio(total)}` : ''}
         </Boton>
       )}

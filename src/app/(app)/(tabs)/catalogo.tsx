@@ -11,6 +11,7 @@ import { ProductoFila, ProductoTarjeta } from '@/components/producto-fila';
 import { iconoDeRubro, SelectorRubros } from '@/components/rubros';
 import { Aviso, Boton, Cargando, Icono, T, type IconName } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { useDebounce } from '@/hooks/use-debounce';
 import { precio } from '@/lib/format';
 import { useCatalogo, useRubros } from '@/lib/queries';
 import { nombreRubro, rubrosVisibles } from '@/lib/rubros';
@@ -19,15 +20,6 @@ import { useCarrito, useCarritoStore } from '@/state/carrito';
 import { useFavoritos, useFavoritosStore } from '@/state/favoritos';
 import { usePreferencias } from '@/state/preferencias';
 import { colors, fonts, radius } from '@/theme';
-
-function useDebounce<T>(valor: T, ms: number): T {
-  const [v, setV] = useState(valor);
-  useEffect(() => {
-    const t = setTimeout(() => setV(valor), ms);
-    return () => clearTimeout(t);
-  }, [valor, ms]);
-  return v;
-}
 
 const texto = (v: string | string[] | undefined) => (typeof v === 'string' ? v : '');
 const miles = (n: number) => n.toLocaleString('es-AR');
@@ -205,7 +197,8 @@ function SinResultados({ q, accent, soloFavoritos, onLimpiar }: { q: string; acc
   );
 }
 
-function CarritoFlotante({ cantidad, total, accent }: { cantidad: number; total: number; accent: string }) {
+/** `total` null: alguna línea no tiene precio de referencia (vino de "repetir pedido"); se muestra solo la cantidad. */
+function CarritoFlotante({ cantidad, total, accent }: { cantidad: number; total: number | null; accent: string }) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -220,7 +213,7 @@ function CarritoFlotante({ cantidad, total, accent }: { cantidad: number; total:
         </T>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-        <T v="fuerte" style={{ color: colors.white }}>{precio(total)}</T>
+        <T v="fuerte" style={{ color: colors.white }}>{total === null ? 'Ver carrito' : precio(total)}</T>
         <Icono name="chevron-right" color={colors.white} size={20} />
       </View>
     </Pressable>
@@ -276,7 +269,7 @@ export default function Catalogo() {
   const productos = useMemo(() => catalogo.data?.pages.flatMap((p) => p.items) ?? [], [catalogo.data]);
   const total = catalogo.data?.pages[0]?.total;
   const lineas = Object.values(carrito);
-  const estimado = lineas.reduce((acc, i) => acc + i.precioReferencia * i.cantidad, 0);
+  const estimado = lineas.every((i) => i.precioReferencia > 0) ? lineas.reduce((acc, i) => acc + i.precioReferencia * i.cantidad, 0) : null;
 
   const limpiar = () => {
     setBusqueda('');

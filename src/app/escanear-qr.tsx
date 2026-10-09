@@ -6,10 +6,11 @@ import { CameraView, scanFromURLAsync, type BarcodeScanningResult } from 'expo-c
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, Vibration, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Aviso, Boton, Cargando, Icono, T } from '@/components/ui';
 import { usePermisoCamara } from '@/hooks/use-permiso-camara';
+import { vibrarExito } from '@/lib/haptica';
 import { parseQrDistribuidora } from '@/lib/qr-distribuidora';
 import { useComercioStore } from '@/state/comercio';
 import { ACCENT_DEFAULT, colors, radius } from '@/theme';
@@ -61,7 +62,7 @@ export default function EscanearQr() {
   const onEscaneo = ({ data }: BarcodeScanningResult) => {
     if (ocupado.current) return;
     ocupado.current = true;
-    Vibration.vibrate(40);
+    vibrarExito();
     procesar(data);
   };
 

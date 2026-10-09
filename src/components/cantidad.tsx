@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { Icono, T } from '@/components/ui';
 import { equivalencia, parsearCantidad, unidadDeVenta } from '@/lib/cantidad';
+import { vibrarAgregado, vibrarSeleccion } from '@/lib/haptica';
 import { colors, fonts, radius } from '@/theme';
 
 // 40: cómodo con el dedo (el área táctil llega a 44+ con el hitSlop).
@@ -14,7 +15,10 @@ export function BotonAgregar({ color, onPress, etiqueta }: { color: string; onPr
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={etiqueta}
-      onPress={onPress}
+      onPress={() => {
+        vibrarAgregado();
+        onPress();
+      }}
       hitSlop={6}
       style={({ pressed }) => ({ width: ALTO, height: ALTO, borderRadius: ALTO / 2, backgroundColor: color, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.8 : 1 })}
     >
@@ -42,10 +46,14 @@ export function SelectorCantidad({
     setTexto(null);
   };
   const boton = { width: ALTO, height: ALTO, alignItems: 'center', justifyContent: 'center' } as const;
+  const paso = (n: number) => {
+    vibrarSeleccion();
+    onCambiar(n);
+  };
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', height: ALTO, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`Quitar uno de ${nombre}`} onPress={() => onCambiar(cantidad - 1)} style={boton} hitSlop={4}>
+      <Pressable accessibilityRole="button" accessibilityLabel={`Quitar uno de ${nombre}`} onPress={() => paso(cantidad - 1)} style={boton} hitSlop={4}>
         <Icono name={cantidad <= 1 ? 'trash-can-outline' : 'minus'} color={colors.inkSoft} size={16} />
       </Pressable>
       <TextInput
@@ -61,7 +69,7 @@ export function SelectorCantidad({
         maxLength={5}
         style={{ minWidth: 38, maxWidth: 58, height: ALTO, textAlign: 'center', fontFamily: fonts.bodySemi, fontSize: 15, color, paddingHorizontal: 2 }}
       />
-      <Pressable accessibilityRole="button" accessibilityLabel={`Sumar uno de ${nombre}`} onPress={() => onCambiar(cantidad + 1)} style={boton} hitSlop={4}>
+      <Pressable accessibilityRole="button" accessibilityLabel={`Sumar uno de ${nombre}`} onPress={() => paso(cantidad + 1)} style={boton} hitSlop={4}>
         <Icono name="plus" color={color} size={16} />
       </Pressable>
     </View>

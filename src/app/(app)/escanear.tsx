@@ -4,12 +4,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CameraView, type BarcodeScanningResult } from 'expo-camera';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Vibration, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DetalleCantidad, SelectorCantidad } from '@/components/cantidad';
 import { FotoProducto } from '@/components/foto-producto';
 import { Aviso, Boton, Cargando, FichaProducto, Icono, Insignia, T } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { vibrarExito } from '@/lib/haptica';
 import { usePermisoCamara } from '@/hooks/use-permiso-camara';
 import { api, ApiError } from '@/lib/api';
 import { precio, presentacion } from '@/lib/format';
@@ -51,7 +52,7 @@ export default function Escanear() {
     if (ocupado.current || !slug) return;
     ocupado.current = true;
     const codigo = data.trim();
-    Vibration.vibrate(40);
+    vibrarExito();
     setAgregado(null);
     setEstado({ tipo: 'buscando', codigo });
     try {
