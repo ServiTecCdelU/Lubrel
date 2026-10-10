@@ -33,6 +33,17 @@ export function datosPedido(data: unknown): DatosPushPedido | null {
     : null;
 }
 
+/** La distribuidora vinculó la cuenta con la ficha de siempre: cambian precios, vendedor y saldo. */
+export interface DatosPushCuenta {
+  tipo: 'cuenta';
+  slug: string;
+}
+
+export function datosCuenta(data: unknown): DatosPushCuenta | null {
+  const d = data as Partial<DatosPushCuenta> | null | undefined;
+  return d?.tipo === 'cuenta' && typeof d.slug === 'string' ? { tipo: 'cuenta', slug: d.slug } : null;
+}
+
 /**
  * Pide permiso (si hace falta) y guarda el token en el servidor. Sin permiso, en web, en
  * emulador o sin conexión no hace nada: la app funciona igual sin avisos.
