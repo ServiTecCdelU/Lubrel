@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { useEffect } from 'react';
 import type { ColorValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEsAncha } from '@/components/marco-app';
 import { RecordatorioRegistro } from '@/components/registro';
 import { Icono, type IconName } from '@/components/ui';
@@ -23,6 +24,8 @@ export default function TabsLayout() {
   const recordarSiToca = useRegistroStore((s) => s.recordarSiToca);
   // Tablet apaisada y PC: el menú pasa a una barra lateral con ícono y nombre.
   const ancha = useEsAncha();
+  // Alto de la barra + el de los botones o gestos del celular, para que no queden encimados.
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (visitante) recordarSiToca();
@@ -44,7 +47,7 @@ export default function TabsLayout() {
           tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: ancha ? 14 : 11 },
           tabBarStyle: ancha
             ? { backgroundColor: colors.card, borderRightColor: colors.line, paddingTop: 12, width: 220, minWidth: 220 }
-            : { backgroundColor: colors.card, borderTopColor: colors.line, height: 80, paddingTop: 6 },
+            : { backgroundColor: colors.card, borderTopColor: colors.line, height: 58 + insets.bottom, paddingTop: 6 },
           tabBarActiveBackgroundColor: ancha ? tint(accent, 0.1) : undefined,
           tabBarBadgeStyle: { backgroundColor: accent, fontFamily: fonts.bodySemi, fontSize: 11 },
           sceneStyle: { backgroundColor: colors.bg },
