@@ -25,12 +25,6 @@ import { useRegistroStore } from '@/state/registro';
 import { useSesion } from '@/state/sesion';
 import { colors, fonts, radius } from '@/theme';
 
-const CLASIFICACION: Record<string, { texto: string; bg: string; fg: string; borde: string }> = {
-  normal: { texto: 'Al día', bg: colors.okSoft, fg: colors.okInk, borde: '#a7f3d0' },
-  atrasado: { texto: 'Con atraso', bg: colors.amberSoft, fg: colors.amberInk, borde: colors.warnLine },
-  moroso: { texto: 'Saldo vencido', bg: colors.errorSoft, fg: colors.errorInk, borde: colors.errorLine },
-};
-
 export default function Pedido() {
   const { slug, accent, visitante } = useComercioActivo();
   const pedirRegistro = useRegistroStore((s) => s.abrir);
@@ -128,9 +122,7 @@ export default function Pedido() {
     );
   }
 
-  const credito = cot.data?.credito;
   const total = visitante ? lineas.reduce((acc, l) => acc + l.precioReferencia * l.cantidad, 0) : cot.data?.total;
-  const clasif = CLASIFICACION[credito?.clasificacion ?? 'normal'] ?? CLASIFICACION.atrasado;
 
   const listaItems = (
     <Tarjeta style={{ padding: 0 }}>
@@ -200,18 +192,6 @@ export default function Pedido() {
 
   const resumen = (
     <>
-      {credito && (
-        <Tarjeta style={{ gap: 10 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <T v="fuerte" style={{ fontSize: 14 }}>Cuenta corriente</T>
-            <Insignia {...clasif} />
-          </View>
-          <Fila etiqueta="Saldo actual" valor={precio(credito.saldo)} />
-          {credito.limite ? <Fila etiqueta="Límite" valor={precio(credito.limite)} /> : null}
-          {credito.disponible != null ? <Fila etiqueta="Disponible" valor={precio(credito.disponible)} /> : null}
-        </Tarjeta>
-      )}
-
       <Tarjeta style={{ gap: 8 }}>
         <T v="fuerte" style={{ fontSize: 14 }}>Nota para la distribuidora</T>
         <TextInput

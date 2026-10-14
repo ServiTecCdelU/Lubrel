@@ -1,5 +1,6 @@
-// Cuenta: datos del comercio, puntos de fidelidad, saldo y crédito, movimientos de cuenta
-// corriente, informar un pago y cerrar sesión (o registrarse, si es visitante).
+// Cuenta: datos del comercio; debajo, la cuenta corriente (saldo y crédito, movimientos,
+// informar un pago) si la distribuidora la muestra; puntos de fidelidad y cerrar sesión
+// (o registrarse, si es visitante).
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Linking, RefreshControl, ScrollView, View } from 'react-native';
@@ -193,6 +194,7 @@ function CuentaCliente() {
   const cuenta = useCuenta(slug!);
   const me = useMe();
   const c = cuenta.data;
+  const conCuentaCorriente = c?.mostrarCuentaCorriente !== false;
   // En tablet apaisada y PC, las tarjetas van lado a lado.
   const ancha = useEsAncha();
   const [editando, setEditando] = useState(false);
@@ -216,17 +218,20 @@ function CuentaCliente() {
               <View style={columna}>
                 <TarjetaDatos cuenta={c} telefonoIngreso={me.data?.telefono} accent={accent} onEditar={() => setEditando(true)} />
               </View>
+              {/* Cuenta corriente debajo de los datos, salvo que la distribuidora la haya apagado. */}
+              {conCuentaCorriente && (
+                <View style={columna}>
+                  <TarjetaSaldo cuenta={c} accent={accent} onInformarPago={() => setInformandoPago(true)} />
+                </View>
+              )}
+              {conCuentaCorriente && ((c.movimientos?.length ?? 0) > 0 || (c.pagosInformados?.length ?? 0) > 0) && (
+                <View style={columna}>
+                  <TarjetaMovimientos movimientos={c.movimientos ?? []} pagos={c.pagosInformados ?? []} />
+                </View>
+              )}
               {c.puntos && (
                 <View style={columna}>
                   <TarjetaPuntos puntos={c.puntos} accent={accent} />
-                </View>
-              )}
-              <View style={columna}>
-                <TarjetaSaldo cuenta={c} accent={accent} onInformarPago={() => setInformandoPago(true)} />
-              </View>
-              {((c.movimientos?.length ?? 0) > 0 || (c.pagosInformados?.length ?? 0) > 0) && (
-                <View style={columna}>
-                  <TarjetaMovimientos movimientos={c.movimientos ?? []} pagos={c.pagosInformados ?? []} />
                 </View>
               )}
             </View>

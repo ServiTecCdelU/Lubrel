@@ -111,6 +111,8 @@ export interface Cuenta {
   /** Últimos movimientos (opcionales: el servidor viejo no los manda). */
   movimientos?: MovimientoCuenta[];
   pagosInformados?: PagoInformado[];
+  /** false → la distribuidora no muestra la cuenta corriente (el servidor viejo no lo manda: se muestra). */
+  mostrarCuentaCorriente?: boolean;
   contacto?: {
     /** WhatsApp del vendedor: 10 dígitos (área + número). */
     vendedor: { nombre: string; whatsapp: string } | null;
