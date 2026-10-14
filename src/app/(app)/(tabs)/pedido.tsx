@@ -227,9 +227,6 @@ export default function Pedido() {
       </Tarjeta>
 
       <Tarjeta style={{ gap: 8 }}>
-        {cot.data?.lista && <Fila etiqueta="Lista de precios" valor={cot.data.lista.nombre} />}
-        <Fila etiqueta="Forma de pago" valor="Cuenta corriente" />
-        <View style={{ height: 1, backgroundColor: colors.lineSoft, marginVertical: 4 }} />
         <Fila etiqueta="Total" valor={total !== undefined ? precio(total) : '…'} fuerte />
       </Tarjeta>
     </>
