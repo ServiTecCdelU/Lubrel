@@ -18,7 +18,7 @@ export default function Bienvenida() {
           <View style={{ width: 64, height: 64, borderRadius: radius.lg, backgroundColor: ACCENT_DEFAULT, alignItems: 'center', justifyContent: 'center' }}>
             <Icono name="storefront-outline" color={colors.white} size={32} />
           </View>
-          <T v="titulo" style={{ textAlign: 'center' }}>Leon Express</T>
+          <T v="titulo" style={{ textAlign: 'center' }}>Vendedor 24</T>
           <T v="chico" style={{ textAlign: 'center', fontSize: 15 }}>
             Escaneá el QR de tu distribuidora para ver sus productos y ofertas.
           </T>

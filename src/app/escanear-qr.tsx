@@ -38,7 +38,7 @@ export default function EscanearQr() {
   // la distribuidora se comprueba que exista: un QR ajeno con texto corto no entra a ninguna.
   const procesar = async (data: string) => {
     if (!parseQrDistribuidora(data)) {
-      setEstado({ tipo: 'error', mensaje: 'Ese código no es un QR de Leon Express.' });
+      setEstado({ tipo: 'error', mensaje: 'Ese código no es un QR de Vendedor 24.' });
       return;
     }
     setEstado({ tipo: 'verificando' });

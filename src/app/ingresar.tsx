@@ -45,7 +45,7 @@ export default function Ingresar() {
               <Icono name="storefront-outline" color={colors.white} size={26} />
             </View>
           )}
-          <T v="titulo" style={{ textAlign: 'center' }}>{marca.data?.nombre ?? 'Leon Express'}</T>
+          <T v="titulo" style={{ textAlign: 'center' }}>{marca.data?.nombre ?? 'Vendedor 24'}</T>
           <T v="chico" style={{ textAlign: 'center', fontSize: 14 }}>
             {invitacion ? 'Tu vendedor te invitó a hacer los pedidos desde el celular.' : 'Hacé tus pedidos, mirá su estado y tu cuenta corriente.'}
           </T>

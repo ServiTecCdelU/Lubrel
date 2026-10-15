@@ -1,11 +1,11 @@
 NOMBRE
-Leon Express
+Vendedor 24
 
 DESCRIPCIÓN BREVE
 Pedile a tu distribuidora desde el celular: catálogo, ofertas y precios al día.
 
 DESCRIPCIÓN COMPLETA
-Leon Express es la app para que los comercios (almacenes, autoservicios, kioscos y minimercados) le hagan sus pedidos a la distribuidora desde el celular, a cualquier hora y sin esperar al vendedor.
+Vendedor 24 es la app para que los comercios (almacenes, autoservicios, kioscos y minimercados) le hagan sus pedidos a la distribuidora desde el celular, a cualquier hora y sin esperar al vendedor.
 
 CÓMO EMPEZAR
 Escaneá el código QR que te da tu distribuidora y listo: ya podés ver el catálogo, las ofertas y los precios. Para enviar pedidos, ingresá con tu cuenta de Google. No hace falta completar formularios ni esperar una aprobación.
