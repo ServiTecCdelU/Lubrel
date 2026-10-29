@@ -1,6 +1,6 @@
 // Hooks de datos (TanStack Query) sobre /api/app/v1.
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { APP_ID } from '@/lib/tienda';
 import type { VersionPublicada } from '@/lib/version-app';
 import type {
@@ -93,11 +93,16 @@ export function useDestacados(slug: string) {
   });
 }
 
-/** Localidades habilitadas por la distribuidora. Un servidor viejo no tiene la ruta: lista vacía. */
+/** Localidades habilitadas por la distribuidora. Un servidor viejo no tiene la ruta (404): lista
+ *  vacía. Cualquier otro error queda como error (no como "sin lista") para poder reintentar. */
 export function useCiudades(slug: string, enabled = true) {
   return useQuery({
     queryKey: qk.ciudades(slug),
-    queryFn: () => api<CiudadApp[]>(`/comercios/${slug}/ciudades`, { auth: 'opcional' }).catch(() => [] as CiudadApp[]),
+    queryFn: () =>
+      api<CiudadApp[]>(`/comercios/${slug}/ciudades`, { auth: 'opcional' }).catch((e) => {
+        if (e instanceof ApiError && e.status === 404) return [] as CiudadApp[];
+        throw e;
+      }),
     staleTime: 10 * 60_000,
     enabled,
   });

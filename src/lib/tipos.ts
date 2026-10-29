@@ -166,6 +166,8 @@ export interface DatosComercio {
   /** GPS (opcional). */
   lat?: number | null;
   lng?: number | null;
+  /** Elegida de las ciudades habilitadas (el servidor exige que sea una de ellas). */
+  ciudadDeLista?: boolean;
 }
 
 /** Localidad donde entrega la distribuidora (GET /comercios/{slug}/ciudades). Lista vacía = se escribe a mano. */

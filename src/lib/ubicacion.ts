@@ -10,11 +10,11 @@ export type ResultadoUbicacion = { ok: true; lat: number; lng: number } | { ok: 
 
 export async function obtenerUbicacion(): Promise<ResultadoUbicacion> {
   // require diferido: importarlo arriba rompería la app en un binario sin el módulo.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const Location = require('expo-location') as typeof import('expo-location');
-  const permiso = await Location.requestForegroundPermissionsAsync();
-  if (permiso.status !== 'granted') return { ok: false, error: 'Sin permiso de ubicación. Elegí tu localidad de la lista.' };
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const Location = require('expo-location') as typeof import('expo-location');
+    const permiso = await Location.requestForegroundPermissionsAsync();
+    if (permiso.status !== 'granted') return { ok: false, error: 'Sin permiso de ubicación. Elegí tu localidad de la lista.' };
     const p = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
     return { ok: true, lat: p.coords.latitude, lng: p.coords.longitude };
   } catch {
