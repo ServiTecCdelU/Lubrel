@@ -1,13 +1,15 @@
 // Hoja "Datos de tu comercio": nombre del negocio, dirección, localidad y teléfono.
 // Se abre al confirmar el pedido si a la ficha le falta alguno (la distribuidora los
 // necesita para entregar) y desde Cuenta para corregirlos. Van a la ficha del cliente.
+// Si la distribuidora habilitó ciudades, la localidad se elige de esa lista (o por GPS).
 import { useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, TextInput, View, type TextInputProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { anchoHoja } from '@/components/marco-app';
+import { CampoCiudad } from '@/components/selector-ciudad';
 import { Aviso, Boton, Icono, T } from '@/components/ui';
 import { errorDatosComercio } from '@/lib/datos-comercio';
-import { useGuardarDatosComercio } from '@/lib/queries';
+import { useCiudades, useGuardarDatosComercio } from '@/lib/queries';
 import type { DatosComercio } from '@/lib/tipos';
 import { colors, fonts, radius, tint } from '@/theme';
 
@@ -53,6 +55,7 @@ export function HojaDatosComercio({
 }) {
   const insets = useSafeAreaInsets();
   const guardar = useGuardarDatosComercio(slug);
+  const ciudades = useCiudades(slug, visible).data ?? [];
   const [datos, setDatos] = useState<DatosComercio>(VACIOS);
   const [error, setError] = useState<string | null>(null);
   // Al abrir se precarga lo que ya tiene la ficha (ajuste durante el render, no en un efecto).
@@ -79,6 +82,7 @@ export function HojaDatosComercio({
       direccion: datos.direccion.trim(),
       localidad: datos.localidad.trim(),
       telefono: datos.telefono.trim(),
+      ...(datos.lat != null && datos.lng != null ? { lat: datos.lat, lng: datos.lng } : {}),
     };
     guardar.mutate(limpios, { onSuccess: onGuardado, onError: (e) => setError(e.message) });
   };
@@ -99,7 +103,16 @@ export function HojaDatosComercio({
 
             <Campo etiqueta="Nombre del negocio" value={datos.negocio} onChangeText={cambiar('negocio')} placeholder="Ej.: Almacén Don Pepe" autoCapitalize="words" returnKeyType="next" />
             <Campo etiqueta="Dirección" value={datos.direccion} onChangeText={cambiar('direccion')} placeholder="Calle y número" autoCapitalize="words" returnKeyType="next" />
-            <Campo etiqueta="Localidad" value={datos.localidad} onChangeText={cambiar('localidad')} placeholder="Ej.: Concepción del Uruguay" autoCapitalize="words" returnKeyType="next" />
+            {ciudades.length > 0 ? (
+              <CampoCiudad
+                valor={datos.localidad}
+                ciudades={ciudades}
+                accent={accent}
+                onElegir={(localidad, ubicacion) => setDatos((d) => ({ ...d, localidad, lat: ubicacion?.lat ?? null, lng: ubicacion?.lng ?? null }))}
+              />
+            ) : (
+              <Campo etiqueta="Localidad" value={datos.localidad} onChangeText={cambiar('localidad')} placeholder="Ej.: Concepción del Uruguay" autoCapitalize="words" returnKeyType="next" />
+            )}
             <Campo etiqueta="Teléfono" value={datos.telefono} onChangeText={cambiar('telefono')} placeholder="Ej.: 3442 123456" keyboardType="phone-pad" returnKeyType="done" onSubmitEditing={enviar} />
 
             {error && <Aviso texto={error} />}

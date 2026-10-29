@@ -3,6 +3,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { api } from '@/lib/api';
 import type { VersionPublicada } from '@/lib/version-app';
 import type {
+  CiudadApp,
   Comercio,
   Cotizacion,
   Cuenta,
@@ -23,6 +24,7 @@ export const qk = {
   comercio: (slug: string) => ['comercio', slug] as const,
   catalogo: (slug: string, q: string, rubro: string) => ['catalogo', slug, q, rubro] as const,
   rubros: (slug: string) => ['rubros', slug] as const,
+  ciudades: (slug: string) => ['ciudades', slug] as const,
   ofertas: (slug: string) => ['ofertas', slug] as const,
   masElegidos: (slug: string) => ['mas-elegidos', slug] as const,
   destacados: (slug: string) => ['destacados', slug] as const,
@@ -87,6 +89,16 @@ export function useDestacados(slug: string) {
     queryKey: qk.destacados(slug),
     queryFn: () => api<ProductoApp[]>(`/comercios/${slug}/destacados`, { auth: 'opcional' }),
     staleTime: 5 * 60_000,
+  });
+}
+
+/** Localidades habilitadas por la distribuidora. Un servidor viejo no tiene la ruta: lista vacía. */
+export function useCiudades(slug: string, enabled = true) {
+  return useQuery({
+    queryKey: qk.ciudades(slug),
+    queryFn: () => api<CiudadApp[]>(`/comercios/${slug}/ciudades`, { auth: 'opcional' }).catch(() => [] as CiudadApp[]),
+    staleTime: 10 * 60_000,
+    enabled,
   });
 }
 

@@ -163,4 +163,15 @@ export interface DatosComercio {
   direccion: string;
   localidad: string;
   telefono: string;
+  /** GPS (opcional). */
+  lat?: number | null;
+  lng?: number | null;
+}
+
+/** Localidad donde entrega la distribuidora (GET /comercios/{slug}/ciudades). Lista vacía = se escribe a mano. */
+export interface CiudadApp {
+  provincia: string;
+  ciudad: string;
+  lat: number | null;
+  lon: number | null;
 }

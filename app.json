@@ -65,6 +65,12 @@
         }
       ],
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Tu ubicación se usa para saber en qué localidad está tu comercio y dónde entregarte."
+        }
+      ],
+      [
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
