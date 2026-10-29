@@ -9,6 +9,7 @@ import { HojaInformarPago, TarjetaMovimientos } from '@/components/cuenta-corrie
 import { LinksCuenta } from '@/components/eliminar-cuenta';
 import { HojaDatosComercio } from '@/components/datos-comercio';
 import { columnaAncha, columnaLectura, useEsAncha } from '@/components/marco-app';
+import { TarjetaApp } from '@/components/opinion';
 import { PieServiTec } from '@/components/pie-servitec';
 import { VersionApp } from '@/components/version-app';
 import { BannerRegistro } from '@/components/registro';
@@ -236,6 +237,8 @@ function CuentaCliente() {
               )}
             </View>
           )}
+
+          {slug && <TarjetaApp slug={slug} accent={accent} />}
 
           <Boton variante="borde" icono="logout" onPress={cerrarSesion} style={ancha ? { alignSelf: 'flex-start' } : undefined}>
             Cerrar sesión

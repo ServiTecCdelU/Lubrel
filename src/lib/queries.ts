@@ -1,6 +1,7 @@
 // Hooks de datos (TanStack Query) sobre /api/app/v1.
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { APP_ID } from '@/lib/tienda';
 import type { VersionPublicada } from '@/lib/version-app';
 import type {
   CiudadApp,
@@ -143,6 +144,20 @@ export function useCrearPedido(slug: string) {
       qc.invalidateQueries({ queryKey: qk.pedidos(slug) });
       qc.invalidateQueries({ queryKey: qk.cuenta(slug) });
     },
+  });
+}
+
+export interface OpinionApp {
+  tipo: 'calificacion' | 'comentario' | 'recomendacion';
+  estrellas?: number | null;
+  texto?: string | null;
+  origen: 'segundo_pedido' | 'periodico' | 'cuenta';
+}
+
+/** Calificación, comentario o recomendación sobre la app (la ven ServiTec y la distribuidora). */
+export function useEnviarOpinion(slug: string) {
+  return useMutation({
+    mutationFn: (o: OpinionApp) => api<{ guardada: boolean }>(`/comercios/${slug}/opiniones`, { method: 'POST', body: { ...o, app: APP_ID ?? 'app' } }),
   });
 }
 

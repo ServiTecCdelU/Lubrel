@@ -22,6 +22,7 @@ import { equivalencia } from '@/lib/cantidad';
 import { precio, presentacion } from '@/lib/format';
 import { useCotizacion, useCrearPedido, useCuenta } from '@/lib/queries';
 import { useCarrito, useCarritoStore, type ItemCarrito } from '@/state/carrito';
+import { useOpinionesStore } from '@/state/opiniones';
 import { useRegistroStore } from '@/state/registro';
 import { useSesion } from '@/state/sesion';
 import { colors, fonts, radius } from '@/theme';
@@ -46,6 +47,7 @@ export default function Pedido() {
   const asentando = itemsAsentados !== items;
   const cot = useCotizacion(slug!, itemsAsentados, !visitante);
   const crear = useCrearPedido(slug!);
+  const registrarPedido = useOpinionesStore((s) => s.registrarPedido);
   const cuenta = useCuenta(slug!, !visitante);
   const nombreGoogle = nombreDeGoogle(useSesion().session?.user.user_metadata);
   const [pidiendoDatos, setPidiendoDatos] = useState(false);
@@ -62,6 +64,8 @@ export default function Pedido() {
       {
         onSuccess: (r) => {
           vibrarExito();
+          // Al 2.º pedido se pregunta "¿Qué te parece la app?" (el reintento de uno ya enviado no cuenta).
+          if (!r.duplicado) registrarPedido();
           vaciar(slug!);
           setNotas('');
           router.push({ pathname: '/pedidos/[id]', params: { id: r.pedidoId, nuevo: '1' } });

@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HojaAlta } from '@/components/alta-comercio';
+import { PreguntaOpinion } from '@/components/opinion';
 import { Aviso, Boton, Cargando } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { useNotificacionesPush } from '@/hooks/use-notificaciones-push';
@@ -15,7 +16,7 @@ import { useRegistroStore } from '@/state/registro';
 import { colors } from '@/theme';
 
 export default function AppLayout() {
-  const { comercios, visitante, conSesion, cargando, error, refetch, accent } = useComercioActivo();
+  const { comercios, visitante, conSesion, cargando, error, refetch, accent, slug: slugActivo } = useComercioActivo();
   const invitacion = useComercioStore((s) => s.invitacion);
   const setInvitacion = useComercioStore((s) => s.setInvitacion);
   const setSlugActivo = useComercioStore((s) => s.setSlugActivo);
@@ -92,6 +93,8 @@ export default function AppLayout() {
           setSlugActivo(slug);
         }}
       />
+      {/* "¿Qué te parece la app?" después del 2.º pedido y "Calificá la app" cada tanto. */}
+      {tieneComercio && !visitante && slugActivo && <PreguntaOpinion slug={slugActivo} accent={accent} />}
     </>
   );
 }
