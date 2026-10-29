@@ -8,6 +8,7 @@ import { ESTADOS, EstadoPedidoInsignia } from '@/components/estado-pedido';
 import { columnaLectura } from '@/components/marco-app';
 import { Aviso, Boton, Cargando, Fila, Icono, T, Tarjeta } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { useSecciones } from '@/hooks/use-secciones';
 import { textoComprobante } from '@/lib/comprobante';
 import { fechaHora, precio } from '@/lib/format';
 import { useCancelarPedido, usePedidos } from '@/lib/queries';
@@ -17,6 +18,7 @@ import { colors, radius } from '@/theme';
 export default function Seguimiento() {
   const { id, nuevo } = useLocalSearchParams<{ id: string; nuevo?: string }>();
   const { slug, accent, comercio } = useComercioActivo();
+  const secciones = useSecciones();
   const pedidos = usePedidos(slug!);
   const setCantidad = useCarritoStore((s) => s.setCantidad);
   const pedido = pedidos.data?.find((p) => p.id === id);
@@ -161,9 +163,11 @@ export default function Seguimiento() {
           </Tarjeta>
         )}
 
-        <Boton variante="suave" color={accent} icono="repeat" onPress={repetir}>
-          Volver a pedir lo mismo
-        </Boton>
+        {secciones.repetirPedido && (
+          <Boton variante="suave" color={accent} icono="repeat" onPress={repetir}>
+            Volver a pedir lo mismo
+          </Boton>
+        )}
         <Boton variante="borde" icono="share-variant-outline" onPress={compartir}>
           Compartir comprobante
         </Boton>

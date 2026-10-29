@@ -6,7 +6,11 @@ export interface Comercio {
   nombre: string;
   logoUrl: string | null;
   colorPrimario: string | null;
+  /** Solo en GET /comercios/{slug}: secciones opcionales (false = apagada). */
+  secciones?: Partial<Record<SeccionApp, boolean>>;
 }
+
+export type SeccionApp = 'ofertas' | 'masElegidos' | 'destacados' | 'favoritos' | 'escanear' | 'repetirPedido';
 
 export interface Me {
   telefono: string | null;

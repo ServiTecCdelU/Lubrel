@@ -14,6 +14,7 @@ import { FotoProducto } from '@/components/foto-producto';
 import { columnaAncha, columnaLectura, useEsAncha } from '@/components/marco-app';
 import { Aviso, Boton, Fila, Insignia, T, Tarjeta, Vacio } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { useSecciones } from '@/hooks/use-secciones';
 import { useDebounce } from '@/hooks/use-debounce';
 import { ApiError } from '@/lib/api';
 import { vibrarExito } from '@/lib/haptica';
@@ -27,6 +28,7 @@ import { colors, fonts, radius } from '@/theme';
 
 export default function Pedido() {
   const { slug, accent, visitante } = useComercioActivo();
+  const secciones = useSecciones();
   const pedirRegistro = useRegistroStore((s) => s.abrir);
   const insets = useSafeAreaInsets();
   const ancha = useEsAncha();
@@ -110,11 +112,11 @@ export default function Pedido() {
         <Vacio
           icono="cart-outline"
           titulo="Tu carrito está vacío"
-          detalle="Sumá productos desde el catálogo, escaneá un código de barras o repetí tu último pedido desde el inicio."
+          detalle="Sumá productos desde el catálogo o desde el inicio."
           accion={
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
               <Boton color={accent} chico icono="package-variant-closed" onPress={() => router.navigate('/catalogo')}>Ver productos</Boton>
-              <Boton variante="suave" color={accent} chico icono="barcode-scan" onPress={() => router.push('/escanear')}>Escanear</Boton>
+              {secciones.escanear && <Boton variante="suave" color={accent} chico icono="barcode-scan" onPress={() => router.push('/escanear')}>Escanear</Boton>}
             </View>
           }
         />

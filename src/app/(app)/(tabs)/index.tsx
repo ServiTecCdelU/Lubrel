@@ -13,6 +13,7 @@ import { columnaAncha, useEsAncha } from '@/components/marco-app';
 import { GrillaRubros, SelectorRubros } from '@/components/rubros';
 import { Boton, Icono, T, Tarjeta, type IconName } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { useSecciones } from '@/hooks/use-secciones';
 import { fechaCorta, precio } from '@/lib/format';
 import { useCuenta, useDestacados, useMasElegidos, usePedidos, useRubros } from '@/lib/queries';
 import { rubrosVisibles } from '@/lib/rubros';
@@ -29,7 +30,7 @@ function saludo(): string {
 
 /** Parece un campo de texto pero abre Productos con el teclado listo. El botón de escanear va
  *  adentro, a la derecha, igual que en el buscador de Productos. */
-function BuscadorInicio({ accent }: { accent: string }) {
+function BuscadorInicio({ accent, escanear }: { accent: string; escanear: boolean }) {
   return (
     <View style={[tarjetaBase, { height: 50, flexDirection: 'row', alignItems: 'center', borderRadius: radius.md, paddingRight: 7, overflow: 'hidden' }]}>
       <Pressable
@@ -41,15 +42,17 @@ function BuscadorInicio({ accent }: { accent: string }) {
         <Icono name="magnify" color={accent} size={22} />
         <T style={{ flex: 1, color: colors.muted, fontSize: 15 }} numberOfLines={1}>Buscá por nombre, marca o código</T>
       </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Escanear código de barras"
-        onPress={() => router.push('/escanear')}
-        hitSlop={4}
-        style={({ pressed }) => ({ width: 36, height: 36, borderRadius: radius.sm, backgroundColor: accent, opacity: pressed ? 0.85 : 1, alignItems: 'center', justifyContent: 'center' })}
-      >
-        <Icono name="barcode-scan" color={colors.white} size={20} />
-      </Pressable>
+      {escanear && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Escanear código de barras"
+          onPress={() => router.push('/escanear')}
+          hitSlop={4}
+          style={({ pressed }) => ({ width: 36, height: 36, borderRadius: radius.sm, backgroundColor: accent, opacity: pressed ? 0.85 : 1, alignItems: 'center', justifyContent: 'center' })}
+        >
+          <Icono name="barcode-scan" color={colors.white} size={20} />
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -67,7 +70,8 @@ function Seccion({ titulo, accion, onAccion }: { titulo: string; accion?: string
   );
 }
 
-function UltimoPedido({ pedido, accent, onRepetir }: { pedido: PedidoResumen; accent: string; onRepetir: () => void }) {
+/** Sin onRepetir (sección apagada) no muestra el botón. */
+function UltimoPedido({ pedido, accent, onRepetir }: { pedido: PedidoResumen; accent: string; onRepetir?: () => void }) {
   return (
     <Tarjeta style={{ gap: 12 }}>
       <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/pedidos/[id]', params: { id: pedido.id } })} style={{ gap: 8 }}>
@@ -80,7 +84,7 @@ function UltimoPedido({ pedido, accent, onRepetir }: { pedido: PedidoResumen; ac
           <T v="numero">{precio(pedido.total)}</T>
         </View>
       </Pressable>
-      <Boton variante="suave" color={accent} icono="repeat" chico onPress={onRepetir}>Repetir este pedido</Boton>
+      {onRepetir && <Boton variante="suave" color={accent} icono="repeat" chico onPress={onRepetir}>Repetir este pedido</Boton>}
     </Tarjeta>
   );
 }
@@ -102,13 +106,13 @@ function Acceso({ icono, titulo, accent, enLinea, onPress }: { icono: IconName; 
 }
 
 /** Último pedido y accesos: abajo en el celular (accesos en fila), a la derecha en pantallas anchas. */
-function Laterales({ ultimo, accent, onRepetir, fila }: { ultimo?: PedidoResumen; accent: string; onRepetir: () => void; fila?: boolean }) {
+function Laterales({ ultimo, accent, onRepetir, escanear, fila }: { ultimo?: PedidoResumen; accent: string; onRepetir?: () => void; escanear: boolean; fila?: boolean }) {
   return (
     <>
       {ultimo && <UltimoPedido pedido={ultimo} accent={accent} onRepetir={onRepetir} />}
       {!fila && <Seccion titulo="Accesos rápidos" />}
       <View style={{ flexDirection: fila ? 'row' : 'column', gap: 10 }}>
-        <Acceso icono="barcode-scan" titulo="Escanear productos" accent={accent} enLinea={!fila} onPress={() => router.push('/escanear')} />
+        {escanear && <Acceso icono="barcode-scan" titulo="Escanear productos" accent={accent} enLinea={!fila} onPress={() => router.push('/escanear')} />}
         <Acceso icono="clipboard-list-outline" titulo="Mis pedidos" accent={accent} enLinea={!fila} onPress={() => router.navigate('/pedidos')} />
         {!fila && <Acceso icono="cart-outline" titulo="Ver carrito" accent={accent} enLinea onPress={() => router.navigate('/pedido')} />}
       </View>
@@ -118,6 +122,7 @@ function Laterales({ ultimo, accent, onRepetir, fila }: { ultimo?: PedidoResumen
 
 export default function Inicio() {
   const { comercio, slug, accent, visitante, conSesion } = useComercioActivo();
+  const secciones = useSecciones();
   const cuenta = useCuenta(slug!, !visitante);
   const pedidos = usePedidos(slug!, !visitante);
   const masElegidos = useMasElegidos(slug!);
@@ -165,7 +170,7 @@ export default function Inicio() {
               <T v="chico" style={{ color: colors.tealInk, fontFamily: fonts.bodyMedium }}>{nombre ? `${saludo()}, ${nombre}` : saludo()}</T>
               <T v="titulo" style={{ fontSize: 24, lineHeight: 30 }}>¿Qué vas a pedir hoy?</T>
             </View>
-            <BuscadorInicio accent={accent} />
+            <BuscadorInicio accent={accent} escanear={secciones.escanear} />
           </View>
         </View>
 
@@ -176,19 +181,23 @@ export default function Inicio() {
           <View style={{ gap: ancha ? 20 : 12, flexDirection: ancha ? 'row' : 'column', alignItems: ancha ? 'flex-start' : 'stretch' }}>
             <View style={{ gap: 12, flex: ancha ? 1 : undefined, minWidth: 0 }}>
               {visitante && <BannerRegistro conSesion={conSesion} accent={accent} />}
-              <OfertasInicio slug={slug!} accent={accent} conLateral={ancha} />
+              {secciones.ofertas && <OfertasInicio slug={slug!} accent={accent} conLateral={ancha} />}
             </View>
 
             {ancha && (
               <View style={{ width: 340, gap: 12, marginTop: 8 }}>
-                <Laterales ultimo={ultimo} accent={accent} onRepetir={repetirUltimo} />
+                <Laterales ultimo={ultimo} accent={accent} onRepetir={secciones.repetirPedido ? repetirUltimo : undefined} escanear={secciones.escanear} />
               </View>
             )}
           </View>
 
-          <CarruselProductos titulo="Los más elegidos" icono="fire" slug={slug!} accent={accent} productos={masElegidos.data} cargando={masElegidos.isLoading} />
+          {secciones.masElegidos && (
+            <CarruselProductos titulo="Los más elegidos" icono="fire" slug={slug!} accent={accent} productos={masElegidos.data} cargando={masElegidos.isLoading} />
+          )}
 
-          <CarruselProductos titulo="Destacados de la semana" icono="star-outline" slug={slug!} accent={accent} productos={destacados.data} cargando={destacados.isLoading} />
+          {secciones.destacados && (
+            <CarruselProductos titulo="Destacados de la semana" icono="star-outline" slug={slug!} accent={accent} productos={destacados.data} cargando={destacados.isLoading} />
+          )}
 
           {rubros.length > 0 && (
             <View style={{ gap: 12 }}>
@@ -204,7 +213,7 @@ export default function Inicio() {
             </View>
           )}
 
-          {!ancha && <Laterales ultimo={ultimo} accent={accent} onRepetir={repetirUltimo} fila />}
+          {!ancha && <Laterales ultimo={ultimo} accent={accent} onRepetir={secciones.repetirPedido ? repetirUltimo : undefined} escanear={secciones.escanear} fila />}
         </View>
       </ScrollView>
 

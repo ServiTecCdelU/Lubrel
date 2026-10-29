@@ -13,6 +13,7 @@ import { iconoDeRubro, SelectorRubros } from '@/components/rubros';
 import { Aviso, Boton, Cargando, Icono, T, Vacio, type IconName } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useSecciones } from '@/hooks/use-secciones';
 import { precio } from '@/lib/format';
 import { useCatalogo, useRubros } from '@/lib/queries';
 import { nombreRubro, rubrosVisibles } from '@/lib/rubros';
@@ -42,12 +43,14 @@ function BarraBusqueda({
   onCambiar,
   accent,
   enfoque,
+  escanear,
 }: {
   valor: string;
   onCambiar: (t: string) => void;
   accent: string;
   /** Cambia cada vez que el inicio pide abrir el teclado. */
   enfoque: string;
+  escanear: boolean;
 }) {
   const ref = useRef<TextInput>(null);
   const [enfocado, setEnfocado] = useState(false);
@@ -75,14 +78,16 @@ function BarraBusqueda({
           <Icono name="close-circle" color={colors.muted} size={18} />
         </Pressable>
       ) : null}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Escanear código de barras"
-        onPress={() => router.push('/escanear')}
-        style={({ pressed }) => ({ width: 36, height: 36, borderRadius: radius.sm, backgroundColor: accent, opacity: pressed ? 0.85 : 1, alignItems: 'center', justifyContent: 'center' })}
-      >
-        <Icono name="barcode-scan" color={colors.white} size={20} />
-      </Pressable>
+      {escanear && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Escanear código de barras"
+          onPress={() => router.push('/escanear')}
+          style={({ pressed }) => ({ width: 36, height: 36, borderRadius: radius.sm, backgroundColor: accent, opacity: pressed ? 0.85 : 1, alignItems: 'center', justifyContent: 'center' })}
+        >
+          <Icono name="barcode-scan" color={colors.white} size={20} />
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -133,15 +138,16 @@ function Atajos({
   soloOfertas: boolean;
   masPedidos: boolean;
   accent: string;
-  onOfertas: () => void;
-  onMasPedidos: () => void;
+  /** Sin el handler (sección apagada) no se muestra el atajo. */
+  onOfertas?: () => void;
+  onMasPedidos?: () => void;
   onVerRubros: () => void;
   onQuitarRubro: () => void;
 }) {
   return (
     <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 16 }}>
-      <Atajo icono="tag-outline" texto="Ofertas" activo={soloOfertas} accent={accent} onPress={onOfertas} />
-      <Atajo icono="fire" texto="Más pedidos" activo={masPedidos} accent={accent} onPress={onMasPedidos} />
+      {onOfertas && <Atajo icono="tag-outline" texto="Ofertas" activo={soloOfertas} accent={accent} onPress={onOfertas} />}
+      {onMasPedidos && <Atajo icono="fire" texto="Más pedidos" activo={masPedidos} accent={accent} onPress={onMasPedidos} />}
       <Atajo
         icono={rubro ? iconoDeRubro(rubro) : 'view-grid-outline'}
         texto={rubro ? nombreRubro(rubro) : 'Rubros'}
@@ -234,6 +240,7 @@ function useFiltrosDeRuta() {
 
 export default function Catalogo() {
   const { comercio, slug, accent } = useComercioActivo();
+  const secciones = useSecciones();
   const { rubro, setRubro, soloOfertas, setSoloOfertas, masPedidos, setMasPedidos, busqueda, setBusqueda, enfoque } = useFiltrosDeRuta();
   const [verRubros, setVerRubros] = useState(false);
   const [soloFavoritos, setSoloFavoritos] = useState(false);
@@ -271,7 +278,9 @@ export default function Catalogo() {
     setSoloFavoritos(false);
   };
 
-  const onFavorito = useCallback((p: ProductoApp) => alternarFavorito(slug!, p.id), [alternarFavorito, slug]);
+  const alternar = useCallback((p: ProductoApp) => alternarFavorito(slug!, p.id), [alternarFavorito, slug]);
+  // Sección "Favoritos" apagada: sin corazón (los componentes lo ocultan sin onFavorito).
+  const onFavorito = secciones.favoritos ? alternar : undefined;
 
   const cambiar = useCallback(
     (p: ProductoApp, cantidad: number) =>
@@ -288,7 +297,8 @@ export default function Catalogo() {
       <BarraSuperior titulo="Productos" subtitulo={comercio?.nombre} color={accent} />
       <View style={{ backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.line, paddingTop: 12, paddingBottom: 12, gap: 10 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16 }}>
-          <BarraBusqueda valor={busqueda} onCambiar={setBusqueda} accent={accent} enfoque={enfoque} />
+          <BarraBusqueda valor={busqueda} onCambiar={setBusqueda} accent={accent} enfoque={enfoque} escanear={secciones.escanear} />
+          {secciones.favoritos && (
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ selected: soloFavoritos }}
@@ -298,6 +308,7 @@ export default function Catalogo() {
           >
             <Icono name={soloFavoritos ? 'heart' : 'heart-outline'} color={soloFavoritos ? colors.white : accent} size={22} />
           </Pressable>
+          )}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={grilla ? 'Ver en lista' : 'Ver en cuadrícula'}
@@ -312,8 +323,8 @@ export default function Catalogo() {
           soloOfertas={soloOfertas}
           masPedidos={masPedidos}
           accent={accent}
-          onOfertas={() => setSoloOfertas(!soloOfertas)}
-          onMasPedidos={() => setMasPedidos(!masPedidos)}
+          onOfertas={secciones.ofertas ? () => setSoloOfertas(!soloOfertas) : undefined}
+          onMasPedidos={secciones.masElegidos ? () => setMasPedidos(!masPedidos) : undefined}
           onVerRubros={() => setVerRubros(true)}
           onQuitarRubro={() => setRubro('')}
         />
