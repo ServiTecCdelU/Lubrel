@@ -74,14 +74,15 @@ export const ProductoFila = memo(function ProductoFila(props: Props) {
   return (
     <View style={[tarjetaBase, { flexGrow: 1, padding: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }, estiloEnCarrito(cantidad, accent)]}>
       <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} size={40} />
-      <Pressable {...abrible(onAbrir, producto)} style={{ flex: 1, gap: 2 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
-          <T v="fuerte" numberOfLines={2} style={{ fontSize: 14, flex: 1 }}>{producto.nombre}</T>
-          {onFavorito && <Corazon producto={producto} favorito={!!favorito} accent={accent} onFavorito={onFavorito} />}
-        </View>
-        <T v="chico" style={{ fontSize: 12 }} numberOfLines={1}>{subtitulo(producto)}</T>
-        <Precio producto={producto} accent={accent} />
-      </Pressable>
+      {/* El corazón va al lado y no adentro del Pressable: un botón dentro de otro rompe en web. */}
+      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
+        <Pressable {...abrible(onAbrir, producto)} style={{ flex: 1, gap: 2 }}>
+          <T v="fuerte" numberOfLines={2} style={{ fontSize: 14 }}>{producto.nombre}</T>
+          <T v="chico" style={{ fontSize: 12 }} numberOfLines={1}>{subtitulo(producto)}</T>
+          <Precio producto={producto} accent={accent} />
+        </Pressable>
+        {onFavorito && <Corazon producto={producto} favorito={!!favorito} accent={accent} onFavorito={onFavorito} />}
+      </View>
       <Controles producto={producto} cantidad={cantidad} accent={accent} onCambiar={props.onCambiar} />
     </View>
   );
