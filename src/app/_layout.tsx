@@ -14,12 +14,13 @@ import { addNetworkStateListener } from 'expo-network';
 import { Stack, useNavigationContainerRef } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { AvisoActualizacion } from '@/components/aviso-actualizacion';
 import { SinConexion } from '@/components/sin-conexion';
 import { useHidratado } from '@/hooks/use-hidratado';
 import { almacen } from '@/lib/almacen';
 import { ApiError } from '@/lib/api';
+import { iniciarSupabase } from '@/lib/supabase';
 import { useComercioStore } from '@/state/comercio';
 import { SesionProvider, useSesion } from '@/state/sesion';
 import { colors } from '@/theme';
@@ -123,13 +124,25 @@ function Navegacion() {
   );
 }
 
+// El cliente de Auth se crea con la configuración que mandó el servidor (ver lib/supabase.ts)
+// antes de montar la sesión. Es una lectura local: el splash sigue visible mientras tanto.
+function SupabaseListo({ children }: { children: ReactNode }) {
+  const [listo, setListo] = useState(false);
+  useEffect(() => {
+    iniciarSupabase().finally(() => setListo(true));
+  }, []);
+  return listo ? children : null;
+}
+
 function RootLayout() {
   return (
     <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-      <SesionProvider>
-        <StatusBar style="dark" />
-        <Navegacion />
-      </SesionProvider>
+      <SupabaseListo>
+        <SesionProvider>
+          <StatusBar style="dark" />
+          <Navegacion />
+        </SesionProvider>
+      </SupabaseListo>
     </PersistQueryClientProvider>
   );
 }

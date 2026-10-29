@@ -1,7 +1,7 @@
 // Cliente de /api/app/v1 del SaaS. Sobre de respuesta: { data } o { error }.
 import { env } from '@/lib/env';
 import { reportarError } from '@/lib/monitoreo';
-import { supabase } from '@/lib/supabase';
+import { revisarConfigRemota, supabase } from '@/lib/supabase';
 
 export class ApiError extends Error {
   constructor(
@@ -57,7 +57,12 @@ export async function api<T>(
     if (res.status >= 500) reportarError(fallo, { path, method: opts.method ?? 'GET' });
     // Token que el servidor ya no acepta (cuenta borrada, refresh fallido): cerrar la sesión
     // local, así la app vuelve a "Ingresar" en vez de mostrar un error en cada pantalla.
-    if (res.status === 401 && headers.Authorization) void supabase.auth.signOut({ scope: 'local' });
+    // Si el 401 es porque la base se mudó con la app abierta, revisarConfigRemota la reinicia
+    // apuntando al proyecto nuevo.
+    if (res.status === 401 && headers.Authorization) {
+      void supabase.auth.signOut({ scope: 'local' });
+      void revisarConfigRemota();
+    }
     throw fallo;
   }
   return json.data as T;
