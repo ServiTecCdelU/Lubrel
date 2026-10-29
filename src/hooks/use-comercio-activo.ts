@@ -4,7 +4,7 @@
 import { colorLegible } from '@/lib/color';
 import { useComercioPublico, useMe } from '@/lib/queries';
 import type { Comercio } from '@/lib/tipos';
-import { useComercioStore } from '@/state/comercio';
+import { DISTRIBUIDORA_FIJA, useComercioStore } from '@/state/comercio';
 import { useSesion } from '@/state/sesion';
 import { ACCENT_DEFAULT } from '@/theme';
 
@@ -13,7 +13,8 @@ export function useComercioActivo() {
   const me = useMe(!!session);
   const slugActivo = useComercioStore((s) => s.slugActivo);
   const distribuidora = useComercioStore((s) => s.distribuidora);
-  const comercios = session ? (me.data?.comercios ?? []) : [];
+  // Solo Lubrel: si la cuenta es cliente de otras distribuidoras, esas se ven en Vendedor 24/7.
+  const comercios = session ? (me.data?.comercios ?? []).filter((c) => c.slug === DISTRIBUIDORA_FIJA) : [];
   // El último QR escaneado manda: si esa distribuidora todavía no está vinculada se la ve
   // como visitante (mientras corre el alta automática), no otro comercio de la cuenta.
   const qrSinVincular = !!distribuidora && !comercios.some((c) => c.slug === distribuidora);

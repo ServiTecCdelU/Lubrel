@@ -51,7 +51,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "La cámara se usa para escanear el QR de tu distribuidora y el código de barras de los productos.",
+          "cameraPermission": "La cámara se usa para escanear el código de barras de los productos.",
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
@@ -60,7 +60,7 @@
         "expo-image-picker",
         {
           "photosPermission": "Se usa para elegir la imagen del QR de tu distribuidora.",
-          "cameraPermission": "La cámara se usa para escanear el QR de tu distribuidora y el código de barras de los productos.",
+          "cameraPermission": "La cámara se usa para escanear el código de barras de los productos.",
           "microphonePermission": false
         }
       ],
@@ -69,6 +69,15 @@
         {
           "url": "https://sentry.io/",
           "note": "Organización, proyecto y token por variables de entorno: SENTRY_ORG, SENTRY_PROJECT y SENTRY_AUTH_TOKEN (ver README)."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
         }
       ]
     ],

@@ -1,7 +1,6 @@
 // Ingreso con Google, con el estilo del login del panel: tarjeta centrada.
-import { router } from 'expo-router';
 import { useState } from 'react';
-import { Linking, Pressable, ScrollView, View } from 'react-native';
+import { Linking, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { URL_PRIVACIDAD } from '@/components/eliminar-cuenta';
 import { LogoMarca } from '@/components/logo-marca';
@@ -10,7 +9,7 @@ import { Aviso, Boton, Icono, T, Tarjeta } from '@/components/ui';
 import { ingresarConGoogle } from '@/lib/google';
 import { useComercioPublico } from '@/lib/queries';
 import { useComercioStore } from '@/state/comercio';
-import { ACCENT_DEFAULT, colors, fonts, radius, tint } from '@/theme';
+import { ACCENT_DEFAULT, colors, radius, tint } from '@/theme';
 
 export default function Ingresar() {
   const invitacion = useComercioStore((s) => s.invitacion);
@@ -69,23 +68,13 @@ export default function Ingresar() {
           </T>
         </Tarjeta>
 
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push('/escanear-qr')}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, borderRadius: radius.md, backgroundColor: tint(accent, 0.06) }}
-        >
-          <Icono name={invitacion ? 'check-circle-outline' : 'qrcode-scan'} color={accent} size={18} />
-          <T v="chico" style={{ flex: 1 }}>
-            {invitacion
-              ? 'Invitación lista: al ingresar, tu comercio queda vinculado.'
-              : distribuidora
-                ? `Distribuidora: ${marca.data?.nombre ?? distribuidora}.`
-                : 'Escaneá el QR de tu distribuidora.'}
-          </T>
-          <T style={{ color: accent, fontFamily: fonts.bodyMedium, fontSize: 14 }}>
-            {invitacion || distribuidora ? 'Cambiar' : 'Escanear'}
-          </T>
-        </Pressable>
+        {/* App solo de Lubrel: no hay distribuidora para elegir, solo se avisa la invitación. */}
+        {invitacion && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, borderRadius: radius.md, backgroundColor: tint(accent, 0.06) }}>
+            <Icono name="check-circle-outline" color={accent} size={18} />
+            <T v="chico" style={{ flex: 1 }}>Invitación lista: al ingresar, tu comercio queda vinculado.</T>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

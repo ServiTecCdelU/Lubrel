@@ -2,28 +2,28 @@ NOMBRE
 Lubrel
 
 DESCRIPCIÓN BREVE
-Pedile a tu distribuidora desde el celular: catálogo, ofertas y precios al día.
+Hacé tus pedidos a Lubrel desde el celular: catálogo, ofertas y precios al día.
 
 DESCRIPCIÓN COMPLETA
-Lubrel es la app para que los comercios (almacenes, autoservicios, kioscos y minimercados) le hagan sus pedidos a la distribuidora desde el celular, a cualquier hora y sin esperar al vendedor.
+Lubrel es la app para que sus clientes (almacenes, autoservicios, kioscos y minimercados) le hagan los pedidos desde el celular, a cualquier hora y sin esperar al vendedor.
 
 CÓMO EMPEZAR
-Escaneá el código QR que te da tu distribuidora y listo: ya podés ver el catálogo, las ofertas y los precios. Para enviar pedidos, ingresá con tu cuenta de Google. No hace falta completar formularios ni esperar una aprobación.
+Abrí la app y listo: ya podés ver el catálogo, las ofertas y los precios de Lubrel. Para enviar pedidos, ingresá con tu cuenta de Google. No hace falta completar formularios ni esperar una aprobación.
 
 QUÉ PODÉS HACER
-• Ver el catálogo completo de tu distribuidora, con fotos, rubros y precios actualizados.
+• Ver el catálogo completo de Lubrel, con fotos, rubros y precios actualizados.
 • Enterarte de las ofertas vigentes apenas se publican.
 • Buscar productos por nombre o filtrarlos por rubro.
 • Escanear el código de barras de un producto en tu góndola con la cámara y agregarlo al pedido en segundos.
 • Elegir cantidades y ver el total antes de enviar.
 • Repetir tu último pedido con un toque.
-• Seguir el estado de tus pedidos y consultar tu saldo con la distribuidora.
+• Seguir el estado de tus pedidos y consultar tu saldo con Lubrel.
 
 PENSADA PARA EL MOSTRADOR
 Armá el pedido mientras recorrés el local: escaneás lo que falta, ajustás cantidades y lo enviás. El carrito queda guardado en el celular hasta que lo mandes.
 
 IMPORTANTE
-Para usar la app tenés que ser cliente de una distribuidora que trabaje con el sistema de gestión ServiTec. Si tu distribuidora todavía no lo usa, pedile que se contacte con nosotros.
+Para hacer pedidos tenés que ser cliente de Lubrel. Si todavía no lo sos, registrate desde la app y quedás dado de alta al instante.
 
 Desarrollada por ServiTec — Sistemas de Gestión.
 Consultas: informaticabalbin@gmail.com · WhatsApp +54 9 3442 64-6670

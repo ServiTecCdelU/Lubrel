@@ -1,7 +1,11 @@
 // Comercio (distribuidora) activo e invitación pendiente de canjear.
+// Esta app es solo de Lubrel: la distribuidora está fija y no se elige por QR ni código
+// (el QR de Lubrel solo lleva a descargar la app). Vendedor 24/7 es la app de las demás.
 import { create } from 'zustand';
 import { almacen } from '@/lib/almacen';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
+export const DISTRIBUIDORA_FIJA = 'lubrel';
 
 export interface InvitacionPendiente {
   slug: string;
@@ -12,24 +16,30 @@ interface ComercioState {
   slugActivo: string | null;
   /** Llegó por deep link antes de loguearse: se canjea apenas hay sesión. */
   invitacion: InvitacionPendiente | null;
-  /** Distribuidora elegida por su QR antes de loguearse: da la marca del ingreso. */
+  /** Distribuidora de la app (siempre Lubrel): da la marca del ingreso y el modo visitante. */
   distribuidora: string | null;
   setSlugActivo: (slug: string | null) => void;
   setInvitacion: (inv: InvitacionPendiente | null) => void;
   setDistribuidora: (slug: string | null) => void;
 }
 
+const FIJA = { distribuidora: DISTRIBUIDORA_FIJA, slugActivo: DISTRIBUIDORA_FIJA };
+
 export const useComercioStore = create<ComercioState>()(
   persist(
     (set) => ({
-      slugActivo: null,
+      ...FIJA,
       invitacion: null,
-      distribuidora: null,
-      setSlugActivo: (slugActivo) => set({ slugActivo }),
-      setInvitacion: (invitacion) => set({ invitacion }),
-      // Escanear un QR también la deja como activa (si ya estaba vinculada, pasa a verse esa).
-      setDistribuidora: (distribuidora) => set(distribuidora ? { distribuidora, slugActivo: distribuidora } : { distribuidora }),
+      // Cualquier intento de elegir otra (link viejo, invitación ajena) queda en Lubrel.
+      setSlugActivo: () => set(FIJA),
+      setInvitacion: (invitacion) => set({ invitacion: invitacion && invitacion.slug !== DISTRIBUIDORA_FIJA ? null : invitacion }),
+      setDistribuidora: () => set(FIJA),
     }),
-    { name: 'comercio', storage: createJSONStorage(() => almacen) },
+    {
+      name: 'comercio',
+      storage: createJSONStorage(() => almacen),
+      // Instalaciones viejas pueden tener guardada otra distribuidora (o ninguna).
+      merge: (guardado, actual) => ({ ...actual, ...(guardado as Partial<ComercioState>), ...FIJA }),
+    },
   ),
 );
