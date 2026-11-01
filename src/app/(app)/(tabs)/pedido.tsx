@@ -165,7 +165,7 @@ export default function Pedido() {
           return (
             <View key={l.productId} style={[estiloFila, { flexDirection: 'row', alignItems: 'center', gap: 24 }]}>
               <View style={{ flex: 1, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-                <FotoProducto nombre={l.nombre} imagenUrl={l.imageUrl} miniUrl={l.imagenMiniUrl} rubro={l.rubro} size={40} />
+                <FotoProducto nombre={l.nombre} imagenUrl={l.imageUrl} miniUrl={l.imagenMiniUrl} rubro={l.rubro} size={56} />
                 {datos}
               </View>
               {subtotal}
@@ -176,7 +176,7 @@ export default function Pedido() {
         // Celular: una sola fila; el subtotal va debajo del selector.
         return (
           <View key={l.productId} style={[estiloFila, { flexDirection: 'row', alignItems: 'center', gap: 10 }]}>
-            <FotoProducto nombre={l.nombre} imagenUrl={l.imageUrl} miniUrl={l.imagenMiniUrl} rubro={l.rubro} size={40} />
+            <FotoProducto nombre={l.nombre} imagenUrl={l.imageUrl} miniUrl={l.imagenMiniUrl} rubro={l.rubro} size={56} />
             {datos}
             <View style={{ alignItems: 'flex-end', gap: 4 }}>
               {selector}

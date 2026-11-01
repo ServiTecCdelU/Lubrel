@@ -13,18 +13,20 @@ interface Props {
   /** Miniatura de 300 px para la ficha chica; sin ella se usa la grande. */
   miniUrl?: string | null;
   size?: number;
+  /** A todo el ancho, cuadrada (tarjeta de la cuadrícula). */
+  llenar?: boolean;
   /** Sin uso: sin foto se muestra el logo de la distribuidora. */
   rubro?: string | null;
 }
 
-export function FotoProducto({ nombre, imagenUrl, miniUrl, size }: Props) {
+export function FotoProducto({ nombre, imagenUrl, miniUrl, size, llenar }: Props) {
   const [abierta, setAbierta] = useState(false);
   const logoUrl = useComercioActivo().comercio?.logoUrl;
-  const ficha = <FichaProducto imagenUrl={miniUrl ?? imagenUrl} size={size} logoUrl={logoUrl} />;
+  const ficha = <FichaProducto imagenUrl={miniUrl ?? imagenUrl} size={size} llenar={llenar} logoUrl={logoUrl} />;
   if (!imagenUrl) return ficha;
   return (
     <>
-      <Pressable accessibilityRole="imagebutton" accessibilityLabel={`Ver foto de ${nombre}`} onPress={() => setAbierta(true)} hitSlop={4}>
+      <Pressable accessibilityRole="imagebutton" accessibilityLabel={`Ver foto de ${nombre}`} onPress={() => setAbierta(true)} hitSlop={4} style={llenar ? { width: '100%' } : undefined}>
         {ficha}
       </Pressable>
       <Modal visible={abierta} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setAbierta(false)}>

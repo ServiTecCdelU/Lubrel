@@ -187,7 +187,7 @@ export default function Escanear() {
             <ScrollView style={{ maxHeight: 260 }} contentContainerStyle={{ gap: 8 }}>
               {estado.productos.map((p) => (
                 <Pressable key={p.id} accessibilityRole="button" onPress={() => elegir(p)} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line }}>
-                  <FichaProducto imagenUrl={p.imagenMiniUrl ?? p.imageUrl} logoUrl={comercio?.logoUrl} size={40} />
+                  <FichaProducto imagenUrl={p.imagenMiniUrl ?? p.imageUrl} logoUrl={comercio?.logoUrl} size={56} />
                   <T style={{ flex: 1, fontSize: 14 }} numberOfLines={2}>{p.nombre}</T>
                   <T v="numero" style={{ fontSize: 15 }}>{precio(p.precioOferta ?? p.precio)}</T>
                 </Pressable>
@@ -200,7 +200,7 @@ export default function Escanear() {
         {estado.tipo === 'resultado' && elegido && (
           <>
             <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-              <FotoProducto nombre={elegido.nombre} imagenUrl={elegido.imageUrl} miniUrl={elegido.imagenMiniUrl} rubro={elegido.rubro} size={72} />
+              <FotoProducto nombre={elegido.nombre} imagenUrl={elegido.imageUrl} miniUrl={elegido.imagenMiniUrl} rubro={elegido.rubro} size={96} />
               <View style={{ flex: 1, gap: 2 }}>
                 <T v="fuerte" numberOfLines={2}>{elegido.nombre}</T>
                 <T v="chico" style={{ fontSize: 12 }}>

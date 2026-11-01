@@ -189,20 +189,27 @@ const LOGO_APP = require('../../assets/images/logo-producto.png');
 
 /** Foto del producto sobre blanco; sin foto (o si no carga), el logo de la distribuidora
  *  (`logoUrl`) y, si tampoco hay o no carga, el de Lubrel que viene con la app. */
-export function FichaProducto({ imagenUrl, size = 56, logoUrl }: { imagenUrl?: string | null; size?: number; logoUrl?: string | null }) {
+export function FichaProducto({ imagenUrl, size = 56, llenar, logoUrl }: {
+  imagenUrl?: string | null;
+  size?: number;
+  /** Ocupa todo el ancho disponible, cuadrada (la foto de la tarjeta en cuadrícula). */
+  llenar?: boolean;
+  logoUrl?: string | null;
+}) {
   // Se guarda la URL que falló (no un booleano) por si la fila se recicla con otro producto.
   const [fallida, setFallida] = useState<string | null>(null);
   const [logoFallido, setLogoFallido] = useState<string | null>(null);
   const foto = !!imagenUrl && imagenUrl !== fallida;
   const logo = !foto && !!logoUrl && logoUrl !== logoFallido;
+  const medida = llenar ? { width: '100%' as const, aspectRatio: 1 } : { width: size, height: size };
   return (
-    <View style={{ width: size, height: size, borderRadius: radius.md, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
+    <View style={[medida, { borderRadius: radius.md, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }]}>
       {foto ? (
-        <Image source={{ uri: imagenUrl! }} style={{ flex: 1, margin: 2 }} contentFit="contain" cachePolicy="disk" onError={() => setFallida(imagenUrl!)} />
+        <Image source={{ uri: imagenUrl! }} style={{ flex: 1 }} contentFit="contain" cachePolicy="disk" onError={() => setFallida(imagenUrl!)} />
       ) : logo ? (
-        <Image source={{ uri: logoUrl! }} style={{ flex: 1, margin: 4 }} contentFit="contain" cachePolicy="disk" onError={() => setLogoFallido(logoUrl!)} />
+        <Image source={{ uri: logoUrl! }} style={{ flex: 1, margin: 2 }} contentFit="contain" cachePolicy="disk" onError={() => setLogoFallido(logoUrl!)} />
       ) : (
-        <Image source={LOGO_APP} style={{ flex: 1, margin: 4 }} contentFit="contain" />
+        <Image source={LOGO_APP} style={{ flex: 1, margin: 2 }} contentFit="contain" />
       )}
     </View>
   );

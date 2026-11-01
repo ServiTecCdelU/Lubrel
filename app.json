@@ -85,6 +85,12 @@
             "enableShrinkResourcesInReleaseBuilds": true
           }
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.955277388498-o0kp1us65tdr2cieoe51nfscqouv3m7t"
+        }
       ]
     ],
     "experiments": {

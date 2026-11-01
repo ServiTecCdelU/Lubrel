@@ -72,8 +72,8 @@ const abrible = (onAbrir: Props['onAbrir'], producto: ProductoApp) =>
 export const ProductoFila = memo(function ProductoFila(props: Props) {
   const { producto, cantidad, accent, favorito, onFavorito, onAbrir } = props;
   return (
-    <View style={[tarjetaBase, { flexGrow: 1, padding: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }, estiloEnCarrito(cantidad, accent)]}>
-      <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} size={40} />
+    <View style={[tarjetaBase, { flexGrow: 1, padding: 8, flexDirection: 'row', gap: 10, alignItems: 'center' }, estiloEnCarrito(cantidad, accent)]}>
+      <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} size={72} />
       {/* El corazón va al lado y no adentro del Pressable: un botón dentro de otro rompe en web. */}
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
         <Pressable {...abrible(onAbrir, producto)} style={{ flex: 1, gap: 2 }}>
@@ -91,11 +91,11 @@ export const ProductoFila = memo(function ProductoFila(props: Props) {
 export const ProductoTarjeta = memo(function ProductoTarjeta(props: Props) {
   const { producto, cantidad, accent, favorito, onFavorito, onAbrir } = props;
   return (
-    <View style={[tarjetaBase, { flex: 1, padding: 10, gap: 6 }, estiloEnCarrito(cantidad, accent)]}>
-      <View style={{ alignItems: 'center', paddingVertical: 4 }}>
-        <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} size={56} />
+    <View style={[tarjetaBase, { flex: 1, padding: 6, gap: 6 }, estiloEnCarrito(cantidad, accent)]}>
+      <View>
+        <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} llenar />
         {onFavorito && (
-          <View style={{ position: 'absolute', top: -4, right: -4 }}>
+          <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'rgba(255, 255, 255, 0.85)', borderRadius: 14 }}>
             <Corazon producto={producto} favorito={!!favorito} accent={accent} onFavorito={onFavorito} />
           </View>
         )}

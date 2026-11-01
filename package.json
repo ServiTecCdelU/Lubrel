@@ -6,6 +6,7 @@
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo/ui": "~57.0.20",
     "@expo/vector-icons": "^15.0.2",
+    "@react-native-google-signin/google-signin": "^17.0.0",
     "@sentry/react-native": "~7.11.0",
     "@supabase/supabase-js": "^2.117.2",
     "@tanstack/query-async-storage-persister": "^5.104.1",
