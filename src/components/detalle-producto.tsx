@@ -58,7 +58,7 @@ export function HojaProducto({ producto: p, slug, accent, onCerrar, favorito, on
 
   const cantidad = carrito[p.id]?.cantidad ?? 0;
   const cambiar = (n: number) =>
-    setCantidad(slug, { productId: p.id, nombre: p.nombre, rubro: p.rubro, precioReferencia: p.precioOferta ?? p.precio, unidadesPorBulto: p.unidadesPorBulto, seDivideEn: p.seDivideEn, imageUrl: p.imageUrl }, n);
+    setCantidad(slug, { productId: p.id, nombre: p.nombre, rubro: p.rubro, precioReferencia: p.precioOferta ?? p.precio, unidadesPorBulto: p.unidadesPorBulto, seDivideEn: p.seDivideEn, imageUrl: p.imageUrl, imagenMiniUrl: p.imagenMiniUrl }, n);
 
   const lote = tamanoLote(p.unidadesPorBulto, p.seDivideEn);
   const final = p.precioOferta ?? p.precio;
@@ -95,7 +95,7 @@ export function HojaProducto({ producto: p, slug, accent, onCerrar, favorito, on
 
           <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 12, gap: 14 }}>
             <View style={{ flexDirection: 'row', gap: 14, alignItems: 'center' }}>
-              <FotoProducto nombre={p.nombre} imagenUrl={p.imageUrl} rubro={p.rubro} size={96} />
+              <FotoProducto nombre={p.nombre} imagenUrl={p.imageUrl} miniUrl={p.imagenMiniUrl} rubro={p.rubro} size={96} />
               <View style={{ flex: 1, gap: 4 }}>
                 <T v="h2" style={{ fontSize: 18, lineHeight: 24 }}>{p.nombre}</T>
                 {p.codigo ? <T v="chico">Cód. {p.codigo}</T> : null}

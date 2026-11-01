@@ -29,7 +29,10 @@ export interface ProductoApp {
   precioOferta: number | null;
   unidadesPorBulto: number | null;
   seDivideEn: number | null;
+  /** Foto grande (detalle). La URL la arma el servidor: el dominio de imágenes no está en la app. */
   imageUrl: string | null;
+  /** Miniatura de 300 px para listados. Opcional: un servidor anterior no la manda. */
+  imagenMiniUrl?: string | null;
 }
 
 export interface OfertaApp {

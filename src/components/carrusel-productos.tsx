@@ -40,7 +40,7 @@ export function CarruselProductos({
   if (!cargando && (!productos || productos.length === 0)) return null;
 
   const cambiar = (p: ProductoApp, cantidad: number) =>
-    setCantidad(slug, { productId: p.id, nombre: p.nombre, rubro: p.rubro, precioReferencia: p.precioOferta ?? p.precio, unidadesPorBulto: p.unidadesPorBulto, seDivideEn: p.seDivideEn, imageUrl: p.imageUrl }, cantidad);
+    setCantidad(slug, { productId: p.id, nombre: p.nombre, rubro: p.rubro, precioReferencia: p.precioOferta ?? p.precio, unidadesPorBulto: p.unidadesPorBulto, seDivideEn: p.seDivideEn, imageUrl: p.imageUrl, imagenMiniUrl: p.imagenMiniUrl }, cantidad);
 
   const lista = productos ?? [];
   const { totalTandas, actual } = calcularTanda(lista.length, porTanda, tanda);

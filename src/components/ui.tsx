@@ -194,7 +194,7 @@ export function FichaProducto({ imagenUrl, size = 56, rubro, nombre }: { imagenU
   if (imagenUrl && imagenUrl !== fallida) {
     return (
       <View style={{ width: size, height: size, borderRadius: radius.md, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
-        <Image source={{ uri: imagenUrl }} style={{ flex: 1, margin: 2 }} contentFit="contain" onError={() => setFallida(imagenUrl)} />
+        <Image source={{ uri: imagenUrl }} style={{ flex: 1, margin: 2 }} contentFit="contain" cachePolicy="disk" onError={() => setFallida(imagenUrl)} />
       </View>
     );
   }

@@ -286,7 +286,7 @@ export default function Catalogo() {
     (p: ProductoApp, cantidad: number) =>
       setCantidad(
         slug!,
-        { productId: p.id, nombre: p.nombre, rubro: p.rubro, precioReferencia: p.precioOferta ?? p.precio, unidadesPorBulto: p.unidadesPorBulto, seDivideEn: p.seDivideEn, imageUrl: p.imageUrl },
+        { productId: p.id, nombre: p.nombre, rubro: p.rubro, precioReferencia: p.precioOferta ?? p.precio, unidadesPorBulto: p.unidadesPorBulto, seDivideEn: p.seDivideEn, imageUrl: p.imageUrl, imagenMiniUrl: p.imagenMiniUrl },
         cantidad,
       ),
     [setCantidad, slug],
