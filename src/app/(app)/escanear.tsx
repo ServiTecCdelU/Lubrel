@@ -27,7 +27,7 @@ type Estado =
 const TIPOS = ['ean13', 'ean8', 'upc_a', 'upc_e', 'code128', 'code39'] as const;
 
 export default function Escanear() {
-  const { slug, accent } = useComercioActivo();
+  const { slug, accent, comercio } = useComercioActivo();
   const insets = useSafeAreaInsets();
   const qc = useQueryClient();
   const { permiso, habilitar: habilitarCamara } = usePermisoCamara();
@@ -187,7 +187,7 @@ export default function Escanear() {
             <ScrollView style={{ maxHeight: 260 }} contentContainerStyle={{ gap: 8 }}>
               {estado.productos.map((p) => (
                 <Pressable key={p.id} accessibilityRole="button" onPress={() => elegir(p)} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 10, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line }}>
-                  <FichaProducto imagenUrl={p.imagenMiniUrl ?? p.imageUrl} rubro={p.rubro} nombre={p.nombre} size={40} />
+                  <FichaProducto imagenUrl={p.imagenMiniUrl ?? p.imageUrl} logoUrl={comercio?.logoUrl} size={40} />
                   <T style={{ flex: 1, fontSize: 14 }} numberOfLines={2}>{p.nombre}</T>
                   <T v="numero" style={{ fontSize: 15 }}>{precio(p.precioOferta ?? p.precio)}</T>
                 </Pressable>

@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { FichaProducto, Icono, T } from '@/components/ui';
+import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { colors, radius } from '@/theme';
 
 interface Props {
@@ -12,13 +13,14 @@ interface Props {
   /** Miniatura de 300 px para la ficha chica; sin ella se usa la grande. */
   miniUrl?: string | null;
   size?: number;
-  /** Sin foto se muestra el ícono del rubro. */
+  /** Sin uso: sin foto se muestra el logo de la distribuidora. */
   rubro?: string | null;
 }
 
-export function FotoProducto({ nombre, imagenUrl, miniUrl, size, rubro }: Props) {
+export function FotoProducto({ nombre, imagenUrl, miniUrl, size }: Props) {
   const [abierta, setAbierta] = useState(false);
-  const ficha = <FichaProducto imagenUrl={miniUrl ?? imagenUrl} size={size} rubro={rubro} nombre={nombre} />;
+  const logoUrl = useComercioActivo().comercio?.logoUrl;
+  const ficha = <FichaProducto imagenUrl={miniUrl ?? imagenUrl} size={size} logoUrl={logoUrl} />;
   if (!imagenUrl) return ficha;
   return (
     <>
