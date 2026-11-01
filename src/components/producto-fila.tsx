@@ -47,7 +47,13 @@ function Precio({ producto, accent }: { producto: ProductoApp; accent: string })
   );
 }
 
+/** En lugar de agregar: el producto se ve pero no se puede pedir. */
+export function InsigniaSinStock() {
+  return <Insignia texto="Sin stock" bg={colors.errorSoft} fg={colors.errorInk} borde={colors.errorLine} />;
+}
+
 function Controles({ producto, cantidad, accent, onCambiar }: Pick<Props, 'producto' | 'cantidad' | 'accent' | 'onCambiar'>) {
+  if (producto.sinStock) return <InsigniaSinStock />;
   if (cantidad <= 0) return <BotonAgregar color={accent} etiqueta={`Agregar ${producto.nombre}`} onPress={() => onCambiar(producto, 1)} />;
   return (
     <View style={{ alignItems: 'center', gap: 2 }}>
@@ -73,7 +79,9 @@ export const ProductoFila = memo(function ProductoFila(props: Props) {
   const { producto, cantidad, accent, favorito, onFavorito, onAbrir } = props;
   return (
     <View style={[tarjetaBase, { flexGrow: 1, padding: 8, flexDirection: 'row', gap: 10, alignItems: 'center' }, estiloEnCarrito(cantidad, accent)]}>
-      <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} size={72} />
+      <View style={producto.sinStock ? { opacity: 0.5 } : undefined}>
+        <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} size={72} />
+      </View>
       {/* El corazón va al lado y no adentro del Pressable: un botón dentro de otro rompe en web. */}
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
         <Pressable {...abrible(onAbrir, producto)} style={{ flex: 1, gap: 2 }}>
@@ -93,7 +101,9 @@ export const ProductoTarjeta = memo(function ProductoTarjeta(props: Props) {
   return (
     <View style={[tarjetaBase, { flex: 1, padding: 6, gap: 6 }, estiloEnCarrito(cantidad, accent)]}>
       <View>
-        <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} llenar />
+        <View style={[{ width: '100%' }, producto.sinStock ? { opacity: 0.5 } : null]}>
+          <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} llenar />
+        </View>
         {onFavorito && (
           <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'rgba(255, 255, 255, 0.85)', borderRadius: 14 }}>
             <Corazon producto={producto} favorito={!!favorito} accent={accent} onFavorito={onFavorito} />

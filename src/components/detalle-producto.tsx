@@ -4,6 +4,7 @@
 import { Modal, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BotonAgregar, DetalleCantidad, SelectorCantidad } from '@/components/cantidad';
+import { InsigniaSinStock } from '@/components/producto-fila';
 import { FotoProducto } from '@/components/foto-producto';
 import { anchoHoja } from '@/components/marco-app';
 import { Boton, Icono, Insignia, T } from '@/components/ui';
@@ -133,7 +134,9 @@ export function HojaProducto({ producto: p, slug, accent, onCerrar, favorito, on
                   <T v="chico" style={{ fontSize: 12 }}>Se suma de a {unidad === 'unidad' ? 'una unidad' : `un ${unidad}`}</T>
                 )}
               </View>
-              {cantidad > 0 ? (
+              {p.sinStock ? (
+                <InsigniaSinStock />
+              ) : cantidad > 0 ? (
                 <View style={{ alignItems: 'center', gap: 2 }}>
                   <SelectorCantidad cantidad={cantidad} color={accent} nombre={p.nombre} onCambiar={cambiar} />
                   <DetalleCantidad cantidad={cantidad} unidadesPorBulto={p.unidadesPorBulto} seDivideEn={p.seDivideEn} />
@@ -143,7 +146,9 @@ export function HojaProducto({ producto: p, slug, accent, onCerrar, favorito, on
               )}
             </View>
 
-            {cantidad > 0 ? (
+            {p.sinStock ? (
+              <Boton variante="borde" onPress={onCerrar}>Cerrar</Boton>
+            ) : cantidad > 0 ? (
               <Boton color={accent} icono="check" onPress={onCerrar}>Listo</Boton>
             ) : (
               <Boton color={accent} icono="cart-plus" onPress={() => cambiar(1)}>Agregar al carrito</Boton>

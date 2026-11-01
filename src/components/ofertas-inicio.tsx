@@ -82,7 +82,7 @@ export function OfertasInicio({ slug, accent, conLateral = false }: { slug: stri
 
   const agregar = (o: OfertaApp) => {
     const p = o.producto;
-    if (!p) return;
+    if (!p || p.sinStock) return;
     const enCarrito = carrito[p.id]?.cantidad ?? 0;
     setCantidad(
       slug,
@@ -200,9 +200,13 @@ function TarjetaOferta({
                 {precio(p.precioOferta ?? p.precio)}
               </T>
             </View>
-            <Boton chico color={accent} icono={enCarrito ? 'check' : 'cart-plus'} onPress={onAgregar} style={{ borderRadius: radius.md }}>
-              {enCarrito ? `${enCarrito} en carrito` : 'Agregar'}
-            </Boton>
+            {p.sinStock ? (
+              <Insignia texto="Sin stock" bg={colors.errorSoft} fg={colors.errorInk} borde={colors.errorLine} />
+            ) : (
+              <Boton chico color={accent} icono={enCarrito ? 'check' : 'cart-plus'} onPress={onAgregar} style={{ borderRadius: radius.md }}>
+                {enCarrito ? `${enCarrito} en carrito` : 'Agregar'}
+              </Boton>
+            )}
           </View>
         )}
       </View>

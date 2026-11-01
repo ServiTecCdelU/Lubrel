@@ -8,6 +8,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DetalleCantidad, SelectorCantidad } from '@/components/cantidad';
 import { FotoProducto } from '@/components/foto-producto';
+import { InsigniaSinStock } from '@/components/producto-fila';
 import { Aviso, Boton, Cargando, FichaProducto, Icono, Insignia, T } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { vibrarExito } from '@/lib/haptica';
@@ -227,19 +228,25 @@ export default function Escanear() {
                   Subtotal {precio((elegido.precioOferta ?? elegido.precio) * cantidad)}
                 </T>
               </View>
-              <View style={{ alignItems: 'center', gap: 2 }}>
-                <SelectorCantidad cantidad={cantidad} color={accent} nombre={elegido.nombre} onCambiar={(n) => setCantidad(Math.max(1, n))} />
-                <DetalleCantidad cantidad={cantidad} unidadesPorBulto={elegido.unidadesPorBulto} seDivideEn={elegido.seDivideEn} />
-              </View>
+              {elegido.sinStock ? (
+                <InsigniaSinStock />
+              ) : (
+                <View style={{ alignItems: 'center', gap: 2 }}>
+                  <SelectorCantidad cantidad={cantidad} color={accent} nombre={elegido.nombre} onCambiar={(n) => setCantidad(Math.max(1, n))} />
+                  <DetalleCantidad cantidad={cantidad} unidadesPorBulto={elegido.unidadesPorBulto} seDivideEn={elegido.seDivideEn} />
+                </View>
+              )}
             </View>
 
             {carrito[elegido.id] ? (
               <T v="chico" style={{ fontSize: 12 }}>Ya tenés {carrito[elegido.id].cantidad} en el carrito; se reemplaza por esta cantidad.</T>
             ) : null}
 
-            <Boton color={accent} icono="cart-plus" onPress={agregar}>
-              {carrito[elegido.id] ? 'Actualizar carrito' : 'Agregar al carrito'}
-            </Boton>
+            {!elegido.sinStock && (
+              <Boton color={accent} icono="cart-plus" onPress={agregar}>
+                {carrito[elegido.id] ? 'Actualizar carrito' : 'Agregar al carrito'}
+              </Boton>
+            )}
             <Boton variante="borde" icono="barcode-scan" onPress={escanearOtro}>Escanear otro</Boton>
           </>
         )}

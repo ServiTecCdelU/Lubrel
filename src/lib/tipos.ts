@@ -33,6 +33,8 @@ export interface ProductoApp {
   imageUrl: string | null;
   /** Miniatura de 300 px para listados. Opcional: un servidor anterior no la manda. */
   imagenMiniUrl?: string | null;
+  /** Se muestra pero no se puede pedir (Stock en el catálogo del SaaS). Un servidor anterior no lo manda. */
+  sinStock?: boolean;
 }
 
 export interface OfertaApp {
