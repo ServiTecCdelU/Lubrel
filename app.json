@@ -13,7 +13,7 @@
     },
     "android": {
       "package": "ar.com.servitec.pedidos",
-      "versionCode": 34,
+      "versionCode": 35,
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
