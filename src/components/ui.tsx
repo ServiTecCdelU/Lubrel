@@ -15,6 +15,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
+import { iconoRubro } from '@/lib/icono-rubro';
 import { ACCENT_DEFAULT, colors, fonts, radius, tarjetaBase, tint } from '@/theme';
 
 export type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
@@ -187,7 +188,7 @@ export function Insignia({ texto, bg, fg, borde }: { texto: string; bg: string; 
 
 /** Foto del producto sobre blanco; sin foto (o si no carga), ícono neutro de paquete (las
  *  iniciales de un código de ERP como "0118 T500GM" no ayudan a reconocer nada). */
-export function FichaProducto({ imagenUrl, size = 56 }: { imagenUrl?: string | null; size?: number }) {
+export function FichaProducto({ imagenUrl, size = 56, rubro, nombre }: { imagenUrl?: string | null; size?: number; rubro?: string | null; nombre?: string | null }) {
   // Se guarda la URL que falló (no un booleano) por si la fila se recicla con otro producto.
   const [fallida, setFallida] = useState<string | null>(null);
   if (imagenUrl && imagenUrl !== fallida) {
@@ -210,7 +211,7 @@ export function FichaProducto({ imagenUrl, size = 56 }: { imagenUrl?: string | n
         justifyContent: 'center',
       }}
     >
-      <Icono name="package-variant-closed" size={Math.round(size * 0.5)} color={colors.muted} />
+      <Icono name={iconoRubro(rubro, nombre)} size={Math.round(size * 0.5)} color={colors.muted} />
     </View>
   );
 }

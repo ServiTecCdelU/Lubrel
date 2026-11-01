@@ -9,11 +9,13 @@ interface Props {
   nombre: string;
   imagenUrl?: string | null;
   size?: number;
+  /** Sin foto se muestra el ícono del rubro. */
+  rubro?: string | null;
 }
 
-export function FotoProducto({ nombre, imagenUrl, size }: Props) {
+export function FotoProducto({ nombre, imagenUrl, size, rubro }: Props) {
   const [abierta, setAbierta] = useState(false);
-  const ficha = <FichaProducto imagenUrl={imagenUrl} size={size} />;
+  const ficha = <FichaProducto imagenUrl={imagenUrl} size={size} rubro={rubro} nombre={nombre} />;
   if (!imagenUrl) return ficha;
   return (
     <>
