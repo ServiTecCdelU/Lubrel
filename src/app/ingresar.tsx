@@ -5,7 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { URL_PRIVACIDAD } from '@/components/eliminar-cuenta';
 import { LogoMarca } from '@/components/logo-marca';
 import { columnaLectura } from '@/components/marco-app';
-import { Aviso, Boton, Icono, T, Tarjeta } from '@/components/ui';
+import { BotonGoogle } from '@/components/boton-google';
+import { Aviso, Icono, T, Tarjeta } from '@/components/ui';
 import { ingresarConGoogle } from '@/lib/google';
 import { useComercioPublico } from '@/lib/queries';
 import { useComercioStore } from '@/state/comercio';
@@ -50,15 +51,13 @@ export default function Ingresar() {
           </T>
         </View>
 
-        <Tarjeta style={{ gap: 14, padding: 20 }}>
-          <View style={{ gap: 4 }}>
-            <T v="h2">Ingresar</T>
-            <T v="chico">Con tu cuenta de Google. Sin contraseñas ni códigos.</T>
+        <Tarjeta style={{ gap: 16, padding: 20 }}>
+          <View style={{ gap: 4, alignItems: 'center' }}>
+            <T v="h2" style={{ textAlign: 'center' }}>Ingresar</T>
+            <T v="chico" style={{ textAlign: 'center' }}>Con tu cuenta de Google. Sin contraseñas ni códigos.</T>
           </View>
           {error && <Aviso texto={error} />}
-          <Boton color={accent} icono="google" onPress={google} cargando={enviando}>
-            Continuar con Google
-          </Boton>
+          <BotonGoogle onPress={google} cargando={enviando} />
           <T v="chico" style={{ fontSize: 12, textAlign: 'center' }}>
             Al continuar aceptás la{' '}
             <T v="chico" accessibilityRole="link" onPress={() => Linking.openURL(URL_PRIVACIDAD)} style={{ fontSize: 12, textDecorationLine: 'underline' }}>
