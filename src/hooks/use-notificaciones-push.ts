@@ -1,10 +1,10 @@
-// Con cuenta vinculada: registra el celular para los avisos de pedidos (una vez por
+// Con cuenta vinculada: registra el celular para los avisos (pedidos y novedades; una vez por
 // cuenta) y, al tocar una notificación, abre ese pedido en su distribuidora.
 import { useQueryClient } from '@tanstack/react-query';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { datosCuenta, datosPedido, registrarDispositivo } from '@/lib/notificaciones';
+import { datosCuenta, datosNovedad, datosPedido, registrarDispositivo } from '@/lib/notificaciones';
 import { useComercioStore } from '@/state/comercio';
 import { useSesion } from '@/state/sesion';
 
@@ -34,6 +34,9 @@ export function useNotificacionesPush(vinculado: boolean) {
       const pedido = datosPedido(data);
       if (pedido) qc.invalidateQueries({ queryKey: ['pedidos', pedido.slug] });
       if (datosCuenta(data)) qc.invalidateQueries();
+      // Todo aviso queda en el historial: se refresca la campanita.
+      const slug = (data as { slug?: unknown } | null)?.slug;
+      if (typeof slug === 'string') qc.invalidateQueries({ queryKey: ['notificaciones', slug] });
     });
     return () => sub.remove();
   }, [qc]);
@@ -46,7 +49,8 @@ export function useNotificacionesPush(vinculado: boolean) {
     if (abierta.current === id) return;
     const pedido = datosPedido(data);
     const cuenta = datosCuenta(data);
-    if (!pedido && !cuenta) return;
+    const novedad = datosNovedad(data);
+    if (!pedido && !cuenta && !novedad) return;
     abierta.current = id;
     if (pedido) {
       setSlugActivo(pedido.slug);
@@ -56,6 +60,11 @@ export function useNotificacionesPush(vinculado: boolean) {
       setSlugActivo(cuenta.slug);
       qc.invalidateQueries();
       router.navigate('/cuenta');
+    } else if (novedad) {
+      // Novedad, producto nuevo u oferta: el historial (abriendo el producto si trae uno).
+      setSlugActivo(novedad.slug);
+      qc.invalidateQueries({ queryKey: ['notificaciones', novedad.slug] });
+      router.push({ pathname: '/notificaciones', params: novedad.productoId ? { producto: novedad.productoId } : {} });
     }
   }, [vinculado, ultima, setSlugActivo, qc]);
 }

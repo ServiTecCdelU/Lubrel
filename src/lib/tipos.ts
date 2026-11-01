@@ -182,3 +182,14 @@ export interface CiudadApp {
   lat: number | null;
   lon: number | null;
 }
+
+/** Aviso del historial "Notificaciones" (GET /comercios/{slug}/notificaciones). */
+export interface NotificacionApp {
+  id: string;
+  tipo: 'pedido' | 'novedad' | 'producto' | 'oferta' | 'cuenta';
+  titulo: string;
+  cuerpo: string;
+  imagenUrl: string | null;
+  data: { pedidoId?: string; productoId?: string };
+  createdAt: string;
+}

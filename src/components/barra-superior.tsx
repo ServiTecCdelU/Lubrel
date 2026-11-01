@@ -1,8 +1,9 @@
 // Barra superior al estilo del header del panel: logo de la distribuidora a la izquierda,
-// título de la pantalla y acción.
+// título de la pantalla, acción y la campanita de notificaciones.
 import type { ReactNode } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Campanita } from '@/components/campanita';
 import { LogoMarca } from '@/components/logo-marca';
 import { T } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
@@ -14,12 +15,15 @@ export function BarraSuperior({
   color,
   izquierda,
   derecha,
+  campanita = true,
 }: {
   titulo: string;
   subtitulo?: string;
   color: string;
   izquierda?: ReactNode;
   derecha?: ReactNode;
+  /** La pantalla de Notificaciones no la muestra (ya está ahí). */
+  campanita?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   const { comercio } = useComercioActivo();
@@ -44,6 +48,7 @@ export function BarraSuperior({
         {subtitulo ? <T v="chico" numberOfLines={1}>{subtitulo}</T> : null}
       </View>
       {derecha}
+      {campanita && <Campanita />}
     </View>
   );
 }

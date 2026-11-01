@@ -44,6 +44,26 @@ export function datosCuenta(data: unknown): DatosPushCuenta | null {
   return d?.tipo === 'cuenta' && typeof d.slug === 'string' ? { tipo: 'cuenta', slug: d.slug } : null;
 }
 
+/** Novedad de la distribuidora (mensaje libre, producto nuevo u oferta): va al historial. */
+export interface DatosPushNovedad {
+  tipo: 'novedad' | 'producto' | 'oferta';
+  slug: string;
+  notificacionId: string | null;
+  productoId: string | null;
+}
+
+export function datosNovedad(data: unknown): DatosPushNovedad | null {
+  const d = data as { tipo?: unknown; slug?: unknown; notificacionId?: unknown; productoId?: unknown } | null | undefined;
+  if (d?.tipo !== 'novedad' && d?.tipo !== 'producto' && d?.tipo !== 'oferta') return null;
+  if (typeof d.slug !== 'string') return null;
+  return {
+    tipo: d.tipo,
+    slug: d.slug,
+    notificacionId: typeof d.notificacionId === 'string' ? d.notificacionId : null,
+    productoId: typeof d.productoId === 'string' ? d.productoId : null,
+  };
+}
+
 /**
  * Pide permiso (si hace falta) y guarda el token en el servidor. Sin permiso, en web, en
  * emulador o sin conexión no hace nada: la app funciona igual sin avisos.

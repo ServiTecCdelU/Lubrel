@@ -11,6 +11,7 @@ import type {
   DatosComercio,
   InformarPago,
   Me,
+  NotificacionApp,
   PaginaCatalogo,
   PedidoCreado,
   OfertaApp,
@@ -33,6 +34,7 @@ export const qk = {
   pedidos: (slug: string) => ['pedidos', slug] as const,
   cuenta: (slug: string) => ['cuenta', slug] as const,
   version: (app: string) => ['version', app] as const,
+  notificaciones: (slug: string) => ['notificaciones', slug] as const,
 };
 
 export function useMe(enabled = true) {
@@ -224,5 +226,35 @@ export function useVersionApp(app: string | undefined, enabled: boolean) {
     queryFn: () => api<VersionPublicada | null>(`/version?app=${encodeURIComponent(app!)}`, { auth: false }),
     enabled: enabled && !!app,
     staleTime: 30 * 60_000,
+  });
+}
+
+/** Historial de avisos (pedidos y novedades). Un servidor sin la ruta (404) devuelve la lista vacía. */
+export function useNotificaciones(slug: string | null, enabled = true) {
+  return useQuery({
+    queryKey: qk.notificaciones(slug ?? ''),
+    queryFn: async () => {
+      try {
+        return await api<{ items: NotificacionApp[] }>(`/comercios/${slug}/notificaciones`);
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 404) return { items: [] as NotificacionApp[] };
+        throw e;
+      }
+    },
+    enabled: enabled && !!slug,
+    staleTime: 60_000,
+  });
+}
+
+/** Un producto por id (para abrirlo desde un aviso), con los precios de la lista del cliente. */
+export function useProductoPorId(slug: string | null, id: string | null) {
+  return useQuery({
+    queryKey: ['producto', slug ?? '', id ?? ''],
+    queryFn: async () => {
+      const params = new URLSearchParams({ page: '1', pageSize: '1', ids: id! });
+      const r = await api<PaginaCatalogo>(`/comercios/${slug}/catalogo?${params}`, { auth: 'opcional' });
+      return r.items[0] ?? null;
+    },
+    enabled: !!slug && !!id,
   });
 }

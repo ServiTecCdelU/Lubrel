@@ -77,6 +77,7 @@ export default function AppLayout() {
         </Stack.Protected>
         <Stack.Protected guard={tieneComercio}>
           <Stack.Screen name="pedidos/[id]" />
+          <Stack.Screen name="notificaciones" />
         </Stack.Protected>
         {/* También desde el modo visitante con sesión, para vincular el comercio. */}
         <Stack.Protected guard={conSesion && !tieneComercio}>
