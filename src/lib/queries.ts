@@ -1,5 +1,5 @@
 // Hooks de datos (TanStack Query) sobre /api/app/v1.
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '@/lib/api';
 import { APP_ID } from '@/lib/tienda';
 import type { VersionPublicada } from '@/lib/version-app';
@@ -19,7 +19,8 @@ import type {
   ProductoApp,
 } from '@/lib/tipos';
 
-const PAGE_SIZE = 20;
+/** Productos por página del catálogo (con botones de página, no carga infinita). */
+export const PAGE_SIZE = 30;
 
 export const qk = {
   me: ['me'] as const,
@@ -52,12 +53,13 @@ export function useComercioPublico(slug: string | undefined) {
 }
 
 /** `favoritos`: si viene, el catálogo se limita a esos ids (los favoritos del dispositivo). */
-export function useCatalogo(slug: string, q: string, rubro: string, soloOfertas = false, masPedidos = false, favoritos?: string[]) {
-  return useInfiniteQuery({
-    queryKey: [...qk.catalogo(slug, q, rubro), soloOfertas, masPedidos, favoritos?.join(',') ?? null],
-    initialPageParam: 1,
-    queryFn: ({ pageParam }) => {
-      const params = new URLSearchParams({ page: String(pageParam), pageSize: String(PAGE_SIZE) });
+export function useCatalogo(slug: string, q: string, rubro: string, pagina: number, soloOfertas = false, masPedidos = false, favoritos?: string[]) {
+  return useQuery({
+    queryKey: [...qk.catalogo(slug, q, rubro), soloOfertas, masPedidos, favoritos?.join(',') ?? null, pagina],
+    // Al cambiar de página queda la anterior a la vista hasta que llega la nueva.
+    placeholderData: keepPreviousData,
+    queryFn: () => {
+      const params = new URLSearchParams({ page: String(pagina), pageSize: String(PAGE_SIZE) });
       if (q) params.set('q', q);
       if (rubro) params.set('rubro', rubro);
       if (soloOfertas) params.set('soloOfertas', '1');
@@ -65,7 +67,6 @@ export function useCatalogo(slug: string, q: string, rubro: string, soloOfertas 
       if (favoritos) params.set('ids', favoritos.join(','));
       return api<PaginaCatalogo>(`/comercios/${slug}/catalogo?${params}`, { auth: 'opcional' });
     },
-    getNextPageParam: (ultima) => (ultima.page < ultima.totalPages ? ultima.page + 1 : undefined),
   });
 }
 

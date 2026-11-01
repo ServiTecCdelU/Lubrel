@@ -8,8 +8,28 @@ import { Platform } from 'react-native';
 import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 
-/** Mismo id que usa el servidor al enviar (services/app-push-service.ts). */
-const CANAL_PEDIDOS = 'pedidos';
+/**
+ * Mismo id que usa el servidor al enviar (services/app-push-service.ts). Un canal de Android no
+ * se puede cambiar una vez creado: "pedidos" (hasta la versión 35 / 8) quedaba sin sonido en
+ * algunos celulares, por eso este es nuevo, con sonido e importancia máxima.
+ */
+export const CANAL_AVISOS = 'avisos';
+const CANAL_VIEJO = 'pedidos';
+
+/** Crea el canal de los avisos (Android 8+). Hace falta antes de pedir permiso y token. */
+export async function crearCanal(): Promise<void> {
+  if (Platform.OS !== 'android') return;
+  await Notifications.setNotificationChannelAsync(CANAL_AVISOS, {
+    name: 'Pedidos, ofertas y novedades',
+    importance: Notifications.AndroidImportance.MAX,
+    sound: 'default',
+    enableVibrate: true,
+    vibrationPattern: [0, 250, 250, 250],
+    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    showBadge: true,
+  });
+  await Notifications.deleteNotificationChannelAsync(CANAL_VIEJO).catch(() => {});
+}
 
 let tokenRegistrado: string | null = null;
 
@@ -71,13 +91,7 @@ export function datosNovedad(data: unknown): DatosPushNovedad | null {
 export async function registrarDispositivo(): Promise<void> {
   if (Platform.OS === 'web' || !Device.isDevice) return;
   // En Android 13+ el canal tiene que existir antes de pedir permiso y token.
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync(CANAL_PEDIDOS, {
-      name: 'Estado de tus pedidos',
-      importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-    });
-  }
+  await crearCanal();
   const actual = await Notifications.getPermissionsAsync();
   const permiso = actual.granted ? actual : await Notifications.requestPermissionsAsync();
   if (!permiso.granted) return;

@@ -1,4 +1,4 @@
-// Productos: catálogo paginado con búsqueda (nombre, código o código de barras),
+// Productos: catálogo en páginas de 30 (botones de página, no carga infinita) con búsqueda (nombre, código o código de barras),
 // accesos Ofertas / Más pedidos / Rubros (hoja con todos), favoritos (corazón, guardados en el
 // dispositivo), vista lista o cuadrícula (se recuerda)
 // y cantidades tipeables. Desde el inicio llega con ?q=, ?rubro=, ?ofertas=1, ?mas=1 o ?buscar=.
@@ -194,6 +194,34 @@ function SinResultados({ q, accent, soloFavoritos, onLimpiar }: { q: string; acc
   );
 }
 
+/** Botones de página al pie de la lista: anterior, "Página N de M" y siguiente. */
+function Paginador({ pagina, totalPaginas, accent, cargando, onCambiar }: { pagina: number; totalPaginas: number; accent: string; cargando: boolean; onCambiar: (p: number) => void }) {
+  if (totalPaginas <= 1) return null;
+  const boton = (icono: IconName, etiqueta: string, destino: number, activo: boolean) => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={etiqueta}
+      accessibilityState={{ disabled: !activo }}
+      disabled={!activo}
+      onPress={() => onCambiar(destino)}
+      style={({ pressed }) => ({ width: 48, height: 44, borderRadius: radius.md, borderWidth: 1, borderColor: activo ? accent : colors.line, backgroundColor: pressed ? colors.lineSoft : colors.card, opacity: activo ? 1 : 0.4, alignItems: 'center', justifyContent: 'center' })}
+    >
+      <Icono name={icono} size={24} color={activo ? accent : colors.muted} />
+    </Pressable>
+  );
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingTop: 12 }}>
+      {boton('page-first', 'Primera página', 1, pagina > 1)}
+      {boton('chevron-left', 'Página anterior', pagina - 1, pagina > 1)}
+      <T v="fuerte" style={{ minWidth: 110, textAlign: 'center', fontSize: 14, opacity: cargando ? 0.5 : 1 }}>
+        Página {pagina} de {totalPaginas}
+      </T>
+      {boton('chevron-right', 'Página siguiente', pagina + 1, pagina < totalPaginas)}
+      {boton('page-last', 'Última página', totalPaginas, pagina < totalPaginas)}
+    </View>
+  );
+}
+
 /** `total` null: alguna línea no tiene precio de referencia (vino de "repetir pedido"); se muestra solo la cantidad. */
 function CarritoFlotante({ cantidad, total, accent }: { cantidad: number; total: number | null; accent: string }) {
   return (
@@ -250,7 +278,21 @@ export default function Catalogo() {
   const alternarFavorito = useFavoritosStore((s) => s.alternar);
   const favoritosSet = useMemo(() => new Set(favoritos), [favoritos]);
 
-  const catalogo = useCatalogo(slug!, q, rubro, soloOfertas, masPedidos, soloFavoritos ? favoritos : undefined);
+  // Con otra búsqueda o filtro se vuelve a la página 1 (ajuste durante el render, no en un efecto).
+  const [pagina, setPagina] = useState(1);
+  const claveFiltros = `${slug}|${q}|${rubro}|${soloOfertas}|${masPedidos}|${soloFavoritos}`;
+  const [filtrosPagina, setFiltrosPagina] = useState(claveFiltros);
+  if (claveFiltros !== filtrosPagina) {
+    setFiltrosPagina(claveFiltros);
+    setPagina(1);
+  }
+  const lista = useRef<FlatList<ProductoApp>>(null);
+  const irAPagina = (p: number) => {
+    setPagina(p);
+    lista.current?.scrollToOffset({ offset: 0, animated: false });
+  };
+
+  const catalogo = useCatalogo(slug!, q, rubro, pagina, soloOfertas, masPedidos, soloFavoritos ? favoritos : undefined);
   const rubrosQuery = useRubros(slug!);
   const rubros = useMemo(() => rubrosVisibles(rubrosQuery.data ?? []), [rubrosQuery.data]);
   const carrito = useCarrito(slug);
@@ -265,8 +307,9 @@ export default function Catalogo() {
   // Ancho fijo por columna: así la última fila incompleta no se estira.
   const anchoItem = columnas > 1 ? (ancho - PAD * 2 - GAP * (columnas - 1)) / columnas : undefined;
 
-  const productos = useMemo(() => catalogo.data?.pages.flatMap((p) => p.items) ?? [], [catalogo.data]);
-  const total = catalogo.data?.pages[0]?.total;
+  const productos = catalogo.data?.items ?? [];
+  const total = catalogo.data?.total;
+  const totalPaginas = catalogo.data?.totalPages ?? 1;
   const lineas = Object.values(carrito);
   const estimado = lineas.every((i) => i.precioReferencia > 0) ? lineas.reduce((acc, i) => acc + i.precioReferencia * i.cantidad, 0) : null;
 
@@ -339,6 +382,7 @@ export default function Catalogo() {
         </View>
       ) : (
         <FlatList
+          ref={lista}
           // numColumns no puede cambiar en caliente: la key fuerza a rearmar la lista.
           key={`${vista}-${columnas}`}
           data={productos}
@@ -355,9 +399,9 @@ export default function Catalogo() {
               )}
             </View>
           )}
-          onEndReached={() => catalogo.hasNextPage && !catalogo.isFetchingNextPage && catalogo.fetchNextPage()}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={catalogo.isFetchingNextPage ? <Cargando /> : null}
+          // Mientras llega la página nueva queda la anterior, atenuada.
+          style={catalogo.isPlaceholderData ? { opacity: 0.5 } : undefined}
+          ListFooterComponent={<Paginador pagina={pagina} totalPaginas={totalPaginas} accent={accent} cargando={catalogo.isPlaceholderData} onCambiar={irAPagina} />}
           ListEmptyComponent={<SinResultados q={q} accent={accent} soloFavoritos={soloFavoritos} onLimpiar={limpiar} />}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"

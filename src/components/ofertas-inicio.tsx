@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useAnchoApp } from '@/components/marco-app';
+import { BrilloOferta, InsigniaOferta } from '@/components/efecto-oferta';
 import { anchoInicio, calcularTanda, FlechasTanda, porTandaPara } from '@/components/tandas';
 import { Boton, Icono, Insignia, T } from '@/components/ui';
 import { precio } from '@/lib/format';
@@ -164,7 +165,7 @@ function TarjetaOferta({
 }) {
   const p = o.producto;
   return (
-    <View style={[tarjetaBase, ancho ? { width: ancho } : { flex: 1, minWidth: 0 }, { height: ALTO, flexDirection: 'row', overflow: 'hidden' }]}>
+    <View style={[tarjetaBase, ancho ? { width: ancho } : { flex: 1, minWidth: 0 }, { height: ALTO, flexDirection: 'row', overflow: 'hidden', borderWidth: 2, borderColor: tint(accent, 0.5) }]}>
       <View style={{ width: '40%', backgroundColor: colors.white, borderRightWidth: 1, borderRightColor: colors.lineSoft }}>
         {o.imagenUrl ? (
           <Image source={{ uri: o.imagenUrl }} style={{ flex: 1, margin: 8 }} contentFit="contain" transition={150} accessibilityLabel={o.titulo} />
@@ -173,11 +174,10 @@ function TarjetaOferta({
             <Icono name="tag-outline" size={34} color={accent} />
           </View>
         )}
-        {o.descuentoPct ? (
-          <View style={{ position: 'absolute', top: 8, left: 8 }}>
-            <Insignia texto={`−${o.descuentoPct}%`} bg={accent} fg={colors.white} />
-          </View>
-        ) : null}
+        <BrilloOferta />
+        <View style={{ position: 'absolute', top: 8, left: 8 }}>
+          <InsigniaOferta texto={o.descuentoPct ? `−${o.descuentoPct}%` : 'Oferta'} color={accent} grande />
+        </View>
       </View>
 
       <View style={{ flex: 1, padding: 12, justifyContent: 'space-between' }}>

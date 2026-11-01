@@ -45,7 +45,7 @@
         {
           "icon": "./assets/images/android-icon-monochrome.png",
           "color": "#3B3B78",
-          "defaultChannel": "pedidos"
+          "defaultChannel": "avisos"
         }
       ],
       [

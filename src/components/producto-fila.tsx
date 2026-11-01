@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import { Pressable, View } from 'react-native';
 import { BotonAgregar, DetalleCantidad, SelectorCantidad } from '@/components/cantidad';
+import { BrilloOferta, InsigniaOferta } from '@/components/efecto-oferta';
 import { FotoProducto } from '@/components/foto-producto';
 import { Icono, Insignia, T } from '@/components/ui';
 import { precio, presentacion } from '@/lib/format';
@@ -36,13 +37,15 @@ function Corazon({ producto, favorito, accent, onFavorito }: { producto: Product
   );
 }
 
+const enOferta = (p: ProductoApp) => p.precioOferta !== null && !p.sinStock;
+
 function Precio({ producto, accent }: { producto: ProductoApp; accent: string }) {
   if (producto.precioOferta === null) return <T v="numero" style={{ fontSize: 15 }}>{precio(producto.precio)}</T>;
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
       <T v="numero" style={{ fontSize: 15, color: accent }}>{precio(producto.precioOferta)}</T>
       <T v="chico" style={{ fontSize: 12, textDecorationLine: 'line-through' }}>{precio(producto.precio)}</T>
-      <Insignia texto={`−${producto.descuentoPct}%`} bg={accent} fg={colors.white} />
+      <InsigniaOferta texto={producto.descuentoPct ? `−${producto.descuentoPct}%` : 'Oferta'} color={accent} />
     </View>
   );
 }
@@ -81,6 +84,7 @@ export const ProductoFila = memo(function ProductoFila(props: Props) {
     <View style={[tarjetaBase, { flexGrow: 1, padding: 8, flexDirection: 'row', gap: 10, alignItems: 'center' }, estiloEnCarrito(cantidad, accent)]}>
       <View style={producto.sinStock ? { opacity: 0.5 } : undefined}>
         <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} size={72} />
+        {enOferta(producto) && <BrilloOferta />}
       </View>
       {/* El corazón va al lado y no adentro del Pressable: un botón dentro de otro rompe en web. */}
       <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
@@ -103,6 +107,7 @@ export const ProductoTarjeta = memo(function ProductoTarjeta(props: Props) {
       <View>
         <View style={[{ width: '100%' }, producto.sinStock ? { opacity: 0.5 } : null]}>
           <FotoProducto nombre={producto.nombre} imagenUrl={producto.imageUrl} miniUrl={producto.imagenMiniUrl} rubro={producto.rubro} llenar />
+          {enOferta(producto) && <BrilloOferta />}
         </View>
         {onFavorito && (
           <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'rgba(255, 255, 255, 0.85)', borderRadius: 14 }}>

@@ -4,6 +4,7 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { ActivarNotificaciones } from '@/components/activar-notificaciones';
 import { BarraSuperior } from '@/components/barra-superior';
 import { CarruselProductos } from '@/components/carrusel-productos';
 import { EstadoPedidoInsignia } from '@/components/estado-pedido';
@@ -180,7 +181,7 @@ export default function Inicio() {
         <View style={[columnaAncha, { padding: 16, gap: ancha ? 20 : 12 }]}>
           <View style={{ gap: ancha ? 20 : 12, flexDirection: ancha ? 'row' : 'column', alignItems: ancha ? 'flex-start' : 'stretch' }}>
             <View style={{ gap: 12, flex: ancha ? 1 : undefined, minWidth: 0 }}>
-              {visitante && <BannerRegistro conSesion={conSesion} accent={accent} />}
+              {visitante ? <BannerRegistro conSesion={conSesion} accent={accent} /> : <ActivarNotificaciones accent={accent} />}
               {secciones.ofertas && <OfertasInicio slug={slug!} accent={accent} conLateral={ancha} />}
             </View>
 
