@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "294597359922",
+    "project_id": "servitec-apps-distribuidora",
+    "storage_bucket": "servitec-apps-distribuidora.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294597359922:android:e7204181de3833992f3f2b",
+        "android_client_info": {
+          "package_name": "ar.com.servitec.pedidos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC_TRQV7_fWOPMziwGKPjEwJ2llaNTiy4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
