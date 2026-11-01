@@ -4,14 +4,18 @@
 // no se puede cerrar: hay que actualizar. En la web no aparece (no hay versión instalada).
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
+import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Modal, View } from 'react-native';
 import { anchoHoja } from '@/components/marco-app';
-import { Boton, Icono, T } from '@/components/ui';
+import { Boton, T } from '@/components/ui';
 import { useVersionApp } from '@/lib/queries';
 import { abrirTienda, APP_ID } from '@/lib/tienda';
 import { estadoVersion, versionInstalada } from '@/lib/version-app';
-import { colors, radius, tarjetaBase, tint } from '@/theme';
+import { radius, tarjetaBase } from '@/theme';
+
+// El logo de la app (el mismo que se usa cuando un producto no tiene foto).
+const LOGO = require('../../assets/images/logo-producto.png');
 
 const INSTALADA = versionInstalada(Application.nativeBuildVersion);
 
@@ -27,12 +31,10 @@ export function AvisoActualizacion() {
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={() => !obligatoria && setCerrado(true)}>
       <View style={{ flex: 1, backgroundColor: 'rgba(15, 23, 42, 0.55)', justifyContent: 'center', padding: 20 }}>
         <View style={[tarjetaBase, anchoHoja, { padding: 20, gap: 14, borderRadius: radius.lg }]}>
-          <View style={{ width: 48, height: 48, borderRadius: radius.md, backgroundColor: tint(colors.tealInk, 0.1), alignItems: 'center', justifyContent: 'center' }}>
-            <Icono name="cellphone-arrow-down" size={26} color={colors.tealInk} />
-          </View>
+          <Image source={LOGO} style={{ width: 120, height: 120, alignSelf: 'center' }} contentFit="contain" accessibilityLabel="Logo" />
           <View style={{ gap: 6 }}>
-            <T v="h2">¡{Constants.expoConfig?.name ?? 'La app'} se actualizó!</T>
-            <T v="chico" style={{ fontSize: 14, lineHeight: 20 }}>
+            <T v="h2" style={{ textAlign: 'center' }}>¡{Constants.expoConfig?.name ?? 'La app'} se actualizó!</T>
+            <T v="chico" style={{ fontSize: 14, lineHeight: 20, textAlign: 'center' }}>
               {obligatoria
                 ? 'Para seguir haciendo pedidos tenés que actualizar la app. Es gratis y tarda un minuto.'
                 : 'Hay una versión nueva con mejoras. Actualizala desde Google Play para que todo funcione bien.'}
