@@ -9,6 +9,7 @@ import { PreguntaOpinion } from '@/components/opinion';
 import { Aviso, Boton, Cargando } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { useNotificacionesPush } from '@/hooks/use-notificaciones-push';
+import { useStockEnVivo } from '@/hooks/use-stock-en-vivo';
 import { cerrarSesion } from '@/lib/notificaciones';
 import { useCanjearInvitacion } from '@/lib/queries';
 import { useComercioStore } from '@/state/comercio';
@@ -27,6 +28,8 @@ export default function AppLayout() {
   const altaIntentada = useRef<string | null>(null);
   const tieneComercio = comercios.length > 0;
   useNotificacionesPush(conSesion && tieneComercio);
+  // Stock en vivo: catálogo y carrito se actualizan solos si la distribuidora mueve stock.
+  useStockEnVivo(slugActivo);
 
   useEffect(() => {
     // Sin sesión la invitación queda guardada hasta que se registre.
