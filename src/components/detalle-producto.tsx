@@ -10,7 +10,7 @@ import { anchoHoja } from '@/components/marco-app';
 import { Boton, Icono, Insignia, T } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { tamanoLote, unidadDeVenta } from '@/lib/cantidad';
-import { fechaCorta, precio, presentacion } from '@/lib/format';
+import { fechaCorta, pesoAprox, precio, presentacion } from '@/lib/format';
 import { usePedidos } from '@/lib/queries';
 import { nombreRubro } from '@/lib/rubros';
 import type { PedidoResumen, ProductoApp } from '@/lib/tipos';
@@ -122,6 +122,7 @@ export function HojaProducto({ producto: p, slug, accent, onCerrar, favorito, on
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               <Dato etiqueta="Presentación" valor={presentacion(p.unidadesPorBulto, p.seDivideEn)} />
               {lote > 1 && <Dato etiqueta="Unidades por bulto" valor={lote.toLocaleString('es-AR')} />}
+              {pesoAprox(p.pesoAproxKg) && <Dato etiqueta="Peso aproximado" valor={`${pesoAprox(p.pesoAproxKg)} c/u`} />}
               {ultimaVez && <Dato etiqueta="Última vez" valor={`${ultimaVez.cantidad} el ${fechaCorta(ultimaVez.fecha)}`} />}
             </View>
 
@@ -154,7 +155,9 @@ export function HojaProducto({ producto: p, slug, accent, onCerrar, favorito, on
               <Boton color={accent} icono="cart-plus" onPress={() => cambiar(1)}>Agregar al carrito</Boton>
             )}
             <T style={{ fontFamily: fonts.body, fontSize: 12, color: colors.muted, textAlign: 'center' }}>
-              El precio final lo confirma la distribuidora al enviar el pedido.
+              {pesoAprox(p.pesoAproxKg)
+                ? 'Se pesa al salir: el precio final es por el peso real de cada pieza.'
+                : 'El precio final lo confirma la distribuidora al enviar el pedido.'}
             </T>
           </ScrollView>
         </View>

@@ -35,6 +35,8 @@ export interface ProductoApp {
   imagenMiniUrl?: string | null;
   /** Se muestra pero no se puede pedir (Stock en el catálogo del SaaS). Un servidor anterior no lo manda. */
   sinStock?: boolean;
+  /** Producto por kilo: peso aproximado de una pieza (se pesa al salir y se cobra el real). Un servidor anterior no lo manda. */
+  pesoAproxKg?: number | null;
 }
 
 export interface OfertaApp {

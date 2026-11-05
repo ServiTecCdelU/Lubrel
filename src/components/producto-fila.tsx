@@ -6,7 +6,7 @@ import { BotonAgregar, DetalleCantidad, SelectorCantidad } from '@/components/ca
 import { BrilloOferta, InsigniaOferta } from '@/components/efecto-oferta';
 import { FotoProducto } from '@/components/foto-producto';
 import { Icono, Insignia, T } from '@/components/ui';
-import { precio, presentacion } from '@/lib/format';
+import { pesoAprox, precio, presentacion } from '@/lib/format';
 import type { ProductoApp } from '@/lib/tipos';
 import { colors, tarjetaBase, tint } from '@/theme';
 
@@ -71,6 +71,13 @@ function Controles({ producto, cantidad, accent, onCambiar }: Pick<Props, 'produ
 const estiloEnCarrito = (cantidad: number, accent: string) =>
   cantidad > 0 ? { backgroundColor: tint(accent, 0.06), borderColor: tint(accent, 0.4) } : { borderColor: colors.line };
 
+/** Por kilo: cuánto pesa más o menos una pieza (el total lo da la balanza al salir). */
+function PesoAprox({ producto }: { producto: ProductoApp }) {
+  const texto = pesoAprox(producto.pesoAproxKg);
+  if (!texto) return null;
+  return <T v="chico" style={{ fontSize: 12, color: colors.amberInk }} numberOfLines={1}>{texto} · se pesa al salir</T>;
+}
+
 const subtitulo = (p: ProductoApp) => `${presentacion(p.unidadesPorBulto, p.seDivideEn)}${p.codigo ? ` · Cód. ${p.codigo}` : ''}`;
 
 const abrible = (onAbrir: Props['onAbrir'], producto: ProductoApp) =>
@@ -91,6 +98,7 @@ export const ProductoFila = memo(function ProductoFila(props: Props) {
         <Pressable {...abrible(onAbrir, producto)} style={{ flex: 1, gap: 2 }}>
           <T v="fuerte" numberOfLines={2} style={{ fontSize: 14 }}>{producto.nombre}</T>
           <T v="chico" style={{ fontSize: 12 }} numberOfLines={1}>{subtitulo(producto)}</T>
+          <PesoAprox producto={producto} />
           <Precio producto={producto} accent={accent} />
         </Pressable>
         {onFavorito && <Corazon producto={producto} favorito={!!favorito} accent={accent} onFavorito={onFavorito} />}
@@ -118,6 +126,7 @@ export const ProductoTarjeta = memo(function ProductoTarjeta(props: Props) {
       <Pressable {...abrible(onAbrir, producto)} style={{ gap: 6 }}>
         <T v="fuerte" numberOfLines={2} style={{ fontSize: 13, minHeight: 34 }}>{producto.nombre}</T>
         <T v="chico" style={{ fontSize: 12 }} numberOfLines={1}>{subtitulo(producto)}</T>
+        <PesoAprox producto={producto} />
         <Precio producto={producto} accent={accent} />
       </Pressable>
       <View style={{ alignItems: cantidad > 0 ? 'center' : 'flex-end', marginTop: 'auto', paddingTop: 4 }}>
