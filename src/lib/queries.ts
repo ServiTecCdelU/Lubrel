@@ -135,7 +135,7 @@ export function usePedidos(slug: string, enabled = true) {
     queryKey: qk.pedidos(slug),
     enabled,
     queryFn: () => api<PedidoResumen[]>(`/comercios/${slug}/pedidos`),
-    refetchInterval: 60_000,
+    // Sin consultar cada tanto: se relee cuando el servidor avisa en vivo (use-cuenta-en-vivo).
   });
 }
 

@@ -8,6 +8,7 @@ import { HojaAlta } from '@/components/alta-comercio';
 import { PreguntaOpinion } from '@/components/opinion';
 import { Aviso, Boton, Cargando } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
+import { useCuentaEnVivo } from '@/hooks/use-cuenta-en-vivo';
 import { useNotificacionesPush } from '@/hooks/use-notificaciones-push';
 import { useStockEnVivo } from '@/hooks/use-stock-en-vivo';
 import { cerrarSesion } from '@/lib/notificaciones';
@@ -30,6 +31,8 @@ export default function AppLayout() {
   useNotificacionesPush(conSesion && tieneComercio);
   // Stock en vivo: catálogo y carrito se actualizan solos si la distribuidora mueve stock.
   useStockEnVivo(slugActivo);
+  // Pedidos y cuenta en vivo (reemplaza la consulta de pedidos cada minuto).
+  useCuentaEnVivo(conSesion && tieneComercio);
 
   useEffect(() => {
     // Sin sesión la invitación queda guardada hasta que se registre.

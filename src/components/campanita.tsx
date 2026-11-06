@@ -1,8 +1,7 @@
 // Campanita de la barra superior: abre "Notificaciones" y muestra cuántas hay sin ver.
 // Solo con sesión y comercio vinculado (el visitante no tiene historial).
 import { router } from 'expo-router';
-import { useEffect } from 'react';
-import { AppState, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Icono, T } from '@/components/ui';
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { contarNoLeidas } from '@/lib/no-leidas';
@@ -15,16 +14,6 @@ export function Campanita() {
   const activa = conSesion && !visitante && !!slug;
   const notificaciones = useNotificaciones(slug, activa);
   const vistasHasta = useNotificacionesVistas((s) => (slug ? s.vistasHasta[slug] : undefined));
-  const { refetch } = notificaciones;
-
-  // Al volver a la app se pregunta de nuevo (un aviso pudo llegar con la app cerrada).
-  useEffect(() => {
-    if (!activa) return;
-    const sub = AppState.addEventListener('change', (estado) => {
-      if (estado === 'active') void refetch();
-    });
-    return () => sub.remove();
-  }, [activa, refetch]);
 
   if (!activa) return null;
   const noLeidas = contarNoLeidas(notificaciones.data?.items ?? [], vistasHasta);
