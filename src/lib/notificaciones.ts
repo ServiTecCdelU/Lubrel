@@ -15,6 +15,8 @@ import { supabase } from '@/lib/supabase';
  */
 export const CANAL_AVISOS = 'avisos';
 const CANAL_VIEJO = 'pedidos';
+/** De qué app es este celular: el servidor manda a cada app solo los avisos de sus distribuidoras. */
+const APP_ID = 'leon-express';
 
 /** Crea el canal de los avisos (Android 8+). Hace falta antes de pedir permiso y token. */
 export async function crearCanal(): Promise<void> {
@@ -98,7 +100,7 @@ export async function registrarDispositivo(): Promise<void> {
 
   const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
   const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
-  await api('/dispositivo', { method: 'PUT', body: { token, plataforma: Platform.OS } });
+  await api('/dispositivo', { method: 'PUT', body: { token, plataforma: Platform.OS, app: APP_ID } });
   tokenRegistrado = token;
 }
 
