@@ -36,7 +36,8 @@ export default function Seguimiento() {
     </Pressable>
   );
 
-  if (pedidos.isLoading) return <Cargando />;
+  // Sin el pedido en la lista mientras se relee (recién creado o abierto desde un aviso): cargando.
+  if (pedidos.isLoading || (!pedido && pedidos.isFetching)) return <Cargando />;
   if (!pedido) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg }}>

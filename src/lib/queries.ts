@@ -148,9 +148,11 @@ export function useCrearPedido(slug: string) {
   return useMutation({
     mutationFn: (body: { items: { productId: string; quantity: number }[]; clientRequestId: string; notas?: string }) =>
       api<PedidoCreado>(`/comercios/${slug}/pedidos`, { method: 'POST', body }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: qk.pedidos(slug) });
+    // Se espera a tener la lista con el pedido nuevo antes de abrir su detalle (si no, el
+    // detalle mostraba un instante "No encontramos este pedido").
+    onSuccess: async () => {
       qc.invalidateQueries({ queryKey: qk.cuenta(slug) });
+      await qc.refetchQueries({ queryKey: qk.pedidos(slug) }).catch(() => {});
     },
   });
 }
