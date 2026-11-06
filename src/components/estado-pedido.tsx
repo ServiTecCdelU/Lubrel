@@ -1,5 +1,6 @@
 import { Insignia } from '@/components/ui';
-import type { EstadoPedido } from '@/lib/tipos';
+import { origenDe } from '@/lib/origen-pedido';
+import type { EstadoPedido, PedidoResumen } from '@/lib/tipos';
 import { colors } from '@/theme';
 
 export const ESTADOS: { clave: EstadoPedido; titulo: string; detalle: string }[] = [
@@ -24,4 +25,9 @@ export function EstadoPedidoInsignia({ estado, retenido }: { estado: EstadoPedid
   }
   const e = ESTILO[estado];
   return <Insignia texto={e.texto} bg={e.bg} fg={e.fg} borde={e.borde} />;
+}
+
+/** De dónde vino el pedido (App, Tienda online, Vendedor o Distribuidora), en gris. */
+export function OrigenChip({ pedido }: { pedido: Pick<PedidoResumen, 'origen' | 'desdeApp'> }) {
+  return <Insignia texto={origenDe(pedido).etiqueta} bg={colors.lineSoft} fg={colors.muted} borde={colors.line} />;
 }

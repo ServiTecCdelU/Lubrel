@@ -99,6 +99,8 @@ export interface PedidoResumen {
   cancelable?: boolean;
   fecha: string;
   desdeApp: boolean;
+  /** De dónde vino: app, tienda online, vendedor o la distribuidora (servidores viejos no lo mandan). */
+  origen?: 'app' | 'tienda' | 'vendedor' | 'distribuidora';
   cantidadProductos: number;
   total: number;
   items: { productId: string | null; nombre: string; cantidad: number }[];

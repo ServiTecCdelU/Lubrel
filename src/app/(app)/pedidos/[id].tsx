@@ -10,6 +10,7 @@ import { Aviso, Boton, Cargando, Fila, Icono, T, Tarjeta } from '@/components/ui
 import { useComercioActivo } from '@/hooks/use-comercio-activo';
 import { useSecciones } from '@/hooks/use-secciones';
 import { textoComprobante } from '@/lib/comprobante';
+import { origenDe } from '@/lib/origen-pedido';
 import { fechaHora, precio } from '@/lib/format';
 import { useCancelarPedido, usePedidos } from '@/lib/queries';
 import { useCarritoStore } from '@/state/carrito';
@@ -129,6 +130,7 @@ export default function Seguimiento() {
             </View>
           ))}
           <View style={{ height: 1, backgroundColor: colors.lineSoft, marginVertical: 4 }} />
+          <Fila etiqueta="Pedido hecho por" valor={origenDe(pedido).etiqueta} />
           <Fila etiqueta="Total" valor={precio(pedido.total)} fuerte />
         </Tarjeta>
 

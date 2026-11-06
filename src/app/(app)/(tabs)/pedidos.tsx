@@ -2,7 +2,7 @@
 import { router } from 'expo-router';
 import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 import { BarraSuperior } from '@/components/barra-superior';
-import { EstadoPedidoInsignia } from '@/components/estado-pedido';
+import { EstadoPedidoInsignia, OrigenChip } from '@/components/estado-pedido';
 import { columnaAncha, columnaLectura, useEsAncha } from '@/components/marco-app';
 import { BannerRegistro } from '@/components/registro';
 import { Aviso, Boton, Cargando, Icono, T, Vacio } from '@/components/ui';
@@ -53,14 +53,17 @@ export default function MisPedidos() {
               style={({ pressed }) => [tarjetaBase, { flex: 1, maxWidth: columnas > 1 ? '50%' : undefined, padding: 14, gap: 8, opacity: pressed ? 0.85 : 1 }]}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                <T v="fuerte" style={{ fontSize: 14 }}>
-                  {item.numero ? `Pedido N° ${item.numero}` : 'Pedido'}
-                </T>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 }}>
+                  <T v="fuerte" style={{ fontSize: 14 }}>
+                    {item.numero ? `Pedido N° ${item.numero}` : 'Pedido'}
+                  </T>
+                  <OrigenChip pedido={item} />
+                </View>
                 <EstadoPedidoInsignia estado={item.estado} retenido={item.retenido} />
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <T v="chico">
-                  {fechaCorta(item.fecha)} · {item.cantidadProductos} productos{item.desdeApp ? '' : ' · por tu vendedor'}
+                  {fechaCorta(item.fecha)} · {item.cantidadProductos} productos
                 </T>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                   <T v="numero" style={{ fontSize: 15 }}>{precio(item.total)}</T>
