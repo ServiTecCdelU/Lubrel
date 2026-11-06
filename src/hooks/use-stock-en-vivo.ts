@@ -4,6 +4,7 @@
 // pantalla. Varios avisos seguidos (una venta de 30 renglones) → una sola relectura.
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { AppState } from 'react-native';
 import { esConsultaDeStock } from '@/lib/stock-en-vivo';
 import { supabase } from '@/lib/supabase';
 
@@ -24,8 +25,14 @@ export function useStockEnVivo(slug: string | null | undefined) {
         }, ESPERA_MS);
       })
       .subscribe();
+    // En segundo plano el canal se corta y los avisos de ese rato se pierden (producto nuevo,
+    // oferta, stock): al volver a la app se releen las consultas en pantalla.
+    const sub = AppState.addEventListener('change', (estado) => {
+      if (estado === 'active') void queryClient.invalidateQueries({ predicate: (q) => esConsultaDeStock(q.queryKey, slug) });
+    });
     return () => {
       if (espera) clearTimeout(espera);
+      sub.remove();
       void supabase.removeChannel(canal);
     };
   }, [slug, queryClient]);

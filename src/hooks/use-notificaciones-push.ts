@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
+import { esConsultaDeStock } from '@/lib/stock-en-vivo';
 import { datosCuenta, datosNovedad, datosPedido, registrarDispositivo } from '@/lib/notificaciones';
 import { useComercioStore } from '@/state/comercio';
 import { useSesion } from '@/state/sesion';
@@ -37,6 +38,9 @@ export function useNotificacionesPush(vinculado: boolean) {
       // Todo aviso queda en el historial: se refresca la campanita.
       const slug = (data as { slug?: unknown } | null)?.slug;
       if (typeof slug === 'string') qc.invalidateQueries({ queryKey: ['notificaciones', slug] });
+      // Producto nuevo u oferta: el catálogo y las ofertas se releen ya, sin esperar la caché.
+      const novedad = datosNovedad(data);
+      if (novedad) qc.invalidateQueries({ predicate: (q) => esConsultaDeStock(q.queryKey, novedad.slug) });
     });
     return () => sub.remove();
   }, [qc]);
@@ -64,6 +68,7 @@ export function useNotificacionesPush(vinculado: boolean) {
       // Novedad, producto nuevo u oferta: el historial (abriendo el producto si trae uno).
       setSlugActivo(novedad.slug);
       qc.invalidateQueries({ queryKey: ['notificaciones', novedad.slug] });
+      qc.invalidateQueries({ predicate: (q) => esConsultaDeStock(q.queryKey, novedad.slug) });
       router.push({ pathname: '/notificaciones', params: novedad.productoId ? { producto: novedad.productoId } : {} });
     }
   }, [vinculado, ultima, setSlugActivo, qc]);
